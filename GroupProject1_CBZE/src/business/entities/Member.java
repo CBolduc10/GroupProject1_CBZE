@@ -159,7 +159,8 @@ public class Member implements Serializable {
 				+ " || ID: " + id + " || Phone: " + phone + " || Date Joined: "
 				+ dateJoined + " || Fee Paid: " + feePaid;
 		string += "] transactions: [";
-		for (Iterator iterator = transactions.iterator(); iterator.hasNext();) {
+		for (Iterator<Transaction> iterator = transactions.iterator(); iterator
+				.hasNext();) {
 			string += (Transaction) iterator.next();
 		}
 		string += "]";

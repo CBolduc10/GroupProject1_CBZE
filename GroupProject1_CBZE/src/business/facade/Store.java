@@ -1,6 +1,5 @@
 package business.facade;
 
-import java.awt.print.Book;
 /**
  * 
  * @author Brahma Dathan and Sarnath Ramnath
@@ -26,13 +25,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import business.entities.Hold;
 import business.entities.Member;
 import business.entities.Product;
 import business.entities.Transaction;
@@ -96,21 +92,6 @@ public class Store implements Serializable {
 				}
 			}
 			return null;
-		}
-
-		/**
-		 * Removes a product from the catalog
-		 * 
-		 * @param productId product id
-		 * @return true iff product could be removed
-		 */
-		public boolean removeProduct(String productId) {// removeBook
-			Product product = search(productId);
-			if (product == null) {
-				return false;
-			} else {
-				return products.remove(product);
-			}
 		}
 
 		/**
@@ -193,6 +174,15 @@ public class Store implements Serializable {
 		public String toString() {
 			return members.toString();
 		}
+
+		public boolean remove(String memberId) {
+			Member member = search(memberId);
+			if (member == null) {
+				return false;
+			} else {
+				return members.remove(member);
+			}
+		}
 	}
 
 	/**
@@ -263,15 +253,12 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Organizes the placing of a hold
+	 * Removes a specific Member from the MemberList
 	 * 
-	 * @param memberId member's id
-	 * @param bookId   book's id
-	 * @param duration for how long the hold should be valid in days
-	 * @return indication on the outcome
+	 * @param memberId id of the member
+	 * @return a code representing the outcome
 	 */
-	public Result placeHold(Request request) {// STRUCTURE MAY BE USEABLE FOR
-												// TRANSACTIONS
+	public Result removeMember(Request request) {
 		Result result = new Result();
 		Member member = members.search(request.getMemberId());
 		if (member == null) {
@@ -279,23 +266,28 @@ public class Store implements Serializable {
 			return result;
 		}
 		result.setMemberFields(member);
-		Book book = catalog.search(request.getBookId());
-		if (book == null) {
-			result.setResultCode(Result.BOOK_NOT_FOUND);
+		if (members.remove(request.getMemberId())) {
+			result.setResultCode(Result.OPERATION_COMPLETED);
 			return result;
 		}
-		result.setBookFields(book);
-		if (book.getBorrower() == null) {
-			result.setResultCode(Result.BOOK_NOT_ISSUED);
+		result.setResultCode(Result.OPERATION_FAILED);
+		return result;
+	}
+
+	public Result changePrice(Request request) {
+		Result result = new Result();
+		Product product = catalog.search(request.getProductId());
+		if (product == null) {
+			result.setResultCode(Result.NO_SUCH_PRODUCT);
 			return result;
 		}
-		Calendar date = new GregorianCalendar();
-		date.add(Calendar.DATE, request.getHoldDuration());
-		Hold hold = new Hold(member, book, date);
-		book.placeHold(hold);
-		member.placeHold(hold);
-		result.setResultCode(Result.OPERATION_COMPLETED);
-		result.setBookFields(book);
+		if (product.setPrice(Double.parseDouble(request.getProductPrice()))) {
+			result.setProductName(request.getProductName());
+			result.setProductPrice(request.getProductPrice());
+			result.setResultCode(Result.OPERATION_COMPLETED);
+			return result;
+		}
+		result.setResultCode(Result.OPERATION_FAILED);
 		return result;
 	}
 
@@ -318,198 +310,6 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Returns an iterator to the Result copy for books issued to a member
-	 * 
-	 * @param request - stors the member id
-	 * @return iterator to the Result objects storing info about issued books
-	 */
-	public Iterator<Result> getProducts(Request request) {
-		Member member = members.search(request.getMemberId());
-		if (member == null) {
-			return null;
-		} else {
-			return new SafeIterator<Book>(member.getBooksIssued(),
-					SafeIterator.BOOK);
-		}
-	}
-
-	/**
-	 * Renews a book
-	 * 
-	 * @param memberId member id
-	 * @param bookId   id of the book to be renewed
-	 * 
-	 * @return the book renewed
-	 */
-	public Result renewBook(Request request) {
-		Result result = new Result();
-		Book book = catalog.search(request.getBookId());
-		if (book == null) {
-			result.setResultCode(Result.BOOK_NOT_FOUND);
-			return result;
-		}
-		Member member = members.search(request.getMemberId());
-		result.setBookFields(book);
-		if (member == null) {
-			result.setResultCode(Result.NO_SUCH_MEMBER);
-			return result;
-		}
-		result.setMemberFields(member);
-		if ((book.renew(member) && member.renew(book))) {
-			result.setResultCode(Result.OPERATION_COMPLETED);
-		} else {
-			result.setResultCode(Result.OPERATION_FAILED);
-		}
-		result.setBookFields(book);
-		return result;
-	}
-
-	/**
-	 * Processes holds for a single book
-	 * 
-	 * @param bookId id of the book
-	 * @return the member who should be notified
-	 */
-	public Result processHold(Request request) {
-		Result result = new Result();
-		Book book = catalog.search(request.getBookId());
-		if (book == null) {
-			result.setResultCode(Result.BOOK_NOT_FOUND);
-			return result;
-		}
-		result.setBookFields(book);
-		if (book.getBorrower() != null) {
-			result.setResultCode(result.BOOK_ISSUED);
-			return result;
-		}
-		Hold hold = book.getNextHold();
-		if (hold == null) {
-			result.setResultCode(Result.NO_HOLD_FOUND);
-			return result;
-		}
-		hold.getMember().removeHold(request.getBookId());
-		hold.getBook().removeHold(hold.getMember().getId());
-		result.setResultCode(Result.OPERATION_COMPLETED);
-		result.setMemberFields(hold.getMember());
-		return result;
-	}
-
-	/**
-	 * Removes a hold for a specific book and member combincation
-	 * 
-	 * @param memberId id of the member
-	 * @param bookId   book id
-	 * @return result of the operation
-	 */
-	public Result removeHold(Request request) {
-		Result result = new Result();
-		Member member = members.search(request.getMemberId());
-		if (member == null) {
-			result.setResultCode(Result.NO_SUCH_MEMBER);
-			return result;
-		}
-		result.setMemberFields(member);
-		Book book = catalog.search(request.getBookId());
-		if (book == null) {
-			result.setResultCode(Result.BOOK_NOT_FOUND);
-			return result;
-		}
-		result.setBookFields(book);
-		if (member.removeHold(request.getBookId())
-				&& book.removeHold(request.getMemberId())) {
-			result.setResultCode(Result.OPERATION_COMPLETED);
-		} else {
-			result.setResultCode(Result.NO_HOLD_FOUND);
-		}
-		return result;
-	}
-
-	/**
-	 * Removes all out-of-date holds.
-	 * 
-	 */
-	private Result removeInvalidHolds() {
-		Result result = new Result();
-		for (Iterator<Member> memberIterator = members
-				.iterator(); memberIterator.hasNext();) {
-			for (Iterator<Hold> iterator = memberIterator.next()
-					.getHolds(); iterator.hasNext();) {
-				Hold hold = iterator.next();
-				if (!hold.isValid()) {
-					hold.getBook().removeHold(hold.getMember().getId());
-					hold.getMember().removeHold(hold.getBook().getId());
-				}
-			}
-		}
-		result.setResultCode(Result.OPERATION_COMPLETED);
-		return result;
-	}
-
-	/**
-	 * Removes a specific book from the catalog
-	 * 
-	 * @param bookId id of the book
-	 * @return a code representing the outcome
-	 */
-	public Result removeBook(Request request) {
-		Result result = new Result();
-		Book book = catalog.search(request.getBookId());
-		if (book == null) {
-			result.setResultCode(Result.BOOK_NOT_FOUND);
-			return result;
-		}
-		result.setBookFields(book);
-		if (book.hasHold()) {
-			result.setResultCode(Result.BOOK_HAS_HOLD);
-			return result;
-		}
-		if (book.getBorrower() != null) {
-			result.setResultCode(Result.BOOK_ISSUED);
-			return result;
-		}
-		if (catalog.removeBook(request.getBookId())) {
-			result.setResultCode(Result.OPERATION_COMPLETED);
-			return result;
-		}
-		result.setResultCode(Result.OPERATION_FAILED);
-		return result;
-	}
-
-	/**
-	 * Returns a single book
-	 * 
-	 * @param bookId id of the book to be returned
-	 * @return a code representing the outcome
-	 */
-	public Result returnBook(Request request) {
-		Result result = new Result();
-		Book book = catalog.search(request.getBookId());
-		if (book == null) {
-			result.setResultCode(Result.BOOK_NOT_FOUND);
-			return result;
-		}
-		result.setBookFields(book);
-		Member member = book.returnBook();
-		if (member == null) {
-			result.setResultCode(Result.BOOK_NOT_ISSUED);
-			return result;
-		}
-		result.setMemberFields(member);
-		if (!(member.returnBook(book))) {
-			result.setResultCode(Result.OPERATION_FAILED);
-			return result;
-		}
-		if (book.hasHold()) {
-			result.setResultCode(Result.BOOK_HAS_HOLD);
-			return result;
-		}
-		result.setResultCode(Result.OPERATION_COMPLETED);
-		result.setBookFields(book);
-		result.setMemberFields(member);
-		return result;
-	}
-
-	/**
 	 * Returns an iterator to the transactions for a specific member on a
 	 * certain date
 	 * 
@@ -526,17 +326,17 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Retrieves a deserialized version of the library from disk
+	 * Retrieves a deserialized version of the store from disk
 	 * 
-	 * @return a Library object
+	 * @return a Store object
 	 */
-	public static Library retrieve() {
+	public static Store retrieve() {
 		try {
-			FileInputStream file = new FileInputStream("LibraryData");
+			FileInputStream file = new FileInputStream("StoreData");
 			ObjectInputStream input = new ObjectInputStream(file);
-			library = (Library) input.readObject();
+			store = (Store) input.readObject();
 			Member.retrieve(input);
-			return library;
+			return store;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			return null;
@@ -547,15 +347,15 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Serializes the Library object
+	 * Serializes the Store object
 	 * 
 	 * @return true iff the data could be saved
 	 */
 	public static boolean save() {
 		try {
-			FileOutputStream file = new FileOutputStream("LibraryData");
+			FileOutputStream file = new FileOutputStream("StoreData");
 			ObjectOutputStream output = new ObjectOutputStream(file);
-			output.writeObject(library);
+			output.writeObject(store);
 			Member.save(output);
 			file.close();
 			return true;
@@ -578,14 +378,15 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Returns an iterator to Book info. The Iterator returned is a safe one, in
-	 * the sense that only copies of the Book fields are assembled into the
-	 * objects returned via next().
+	 * Returns an iterator to Product info. The Iterator returned is a safe one,
+	 * in the sense that only copies of the Product fields are assembled into
+	 * the objects returned via next().
 	 * 
-	 * @return an Iterator to Result - only the Book fields are valid.
+	 * @return an Iterator to Result - only the Product fields are valid.
 	 */
-	public Iterator<Result> getBooks() {
-		return new SafeIterator<Book>(catalog.iterator(), SafeIterator.BOOK);
+	public Iterator<Result> getProducts() {
+		return new SafeIterator<Product>(catalog.iterator(),
+				SafeIterator.PRODUCT);
 	}
 
 	/**

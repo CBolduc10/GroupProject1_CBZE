@@ -12,9 +12,9 @@ public class Product implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private String id;
-	private static int stock;
+	private int stock;
 	private double price;
-	private static int reorderLevel;
+	private int reorderLevel;
 
 	/**
 	 * Creates a product with a given name, id, reorder level, price and stock
@@ -33,8 +33,8 @@ public class Product implements Serializable {
 		this.price = price;
 	}
 
-	public static void reorderLevel() {
-		if (stock <= reorderLevel) {
+	public void reorderLevel() {
+		if (this.stock <= this.reorderLevel) {
 
 		}
 	}
@@ -71,8 +71,9 @@ public class Product implements Serializable {
 		this.stock = stock;
 	}
 
-	public void setPrice(double price) {
+	public boolean setPrice(double price) {
 		this.price = price;
+		return true;
 	}
 
 	public void setReorderLevel(int reorderLevel) {
