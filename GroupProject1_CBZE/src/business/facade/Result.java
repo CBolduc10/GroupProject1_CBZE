@@ -12,7 +12,7 @@ package business.facade;
  *
  */
 public class Result extends DataTransfer {
-	public static final int BOOK_NOT_FOUND = 1;
+	public static final int NO_SUCH_PRODUCT = 1;
 	public static final int BOOK_NOT_ISSUED = 2;
 	public static final int BOOK_HAS_HOLD = 3;
 	public static final int BOOK_ISSUED = 4;
