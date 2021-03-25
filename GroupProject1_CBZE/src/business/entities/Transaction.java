@@ -78,15 +78,29 @@ public class Transaction implements Serializable {
 	}
 
 	/**
-	 * Checks whether this transaction is on the given date
+	 * Checks whether this transaction is between the given dates
 	 * 
-	 * @param date The date for which transactions are being sought
-	 * @return true iff the dates match
+	 * @param startDate The start date for which transactions are being sought
+	 * @param endDate   The end date for which transactions are being sought
+	 * @return true iff the date is between the two dates
 	 */
-	public boolean onDate(Calendar date) {
-		return ((date.get(Calendar.YEAR) == this.date.get(Calendar.YEAR))
-				&& (date.get(Calendar.MONTH) == this.date.get(Calendar.MONTH))
-				&& (date.get(Calendar.DATE) == this.date.get(Calendar.DATE)));
+	public boolean betweenDates(Calendar startDate, Calendar endDate) {
+		return ((startDate.get(Calendar.YEAR) < date.get(Calendar.YEAR)
+				&& endDate.get(Calendar.YEAR) > date.get(Calendar.YEAR))
+				|| (startDate.get(Calendar.YEAR) == date.get(Calendar.YEAR)
+						&& (startDate.get(Calendar.MONTH) < date
+								.get(Calendar.MONTH)
+								|| (startDate.get(Calendar.MONTH) == date
+										.get(Calendar.MONTH)
+										&& startDate.get(Calendar.DATE) < date
+												.get(Calendar.DATE))))
+				|| (endDate.get(Calendar.YEAR) == date.get(Calendar.YEAR)
+						&& (endDate.get(Calendar.MONTH) > date
+								.get(Calendar.MONTH)
+								|| (endDate.get(Calendar.MONTH) == date
+										.get(Calendar.MONTH)
+										&& endDate.get(Calendar.DATE) > date
+												.get(Calendar.DATE)))));
 	}
 
 	public double getTransactionTotal() {
@@ -100,6 +114,10 @@ public class Transaction implements Serializable {
 	public double processTransaction() {
 		double change = total - payment;
 		return change;
+	}
+
+	public List<TransactionItem> getItems() {
+		return items;
 	}
 
 	/**

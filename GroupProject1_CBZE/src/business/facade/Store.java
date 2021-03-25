@@ -51,19 +51,19 @@ public class Store implements Serializable {
 	 * @author Brahma Dathan and Sarnath Ramnath
 	 * @Copyright (c) 2010
 	 * 
-	 *            Redistribution and use with or without modification, are
-	 *            permitted provided that the following conditions are met:
+	 *            Redistribution and use with or without modification, are permitted
+	 *            provided that the following conditions are met:
 	 *
-	 *            - the use is for academic purpose only - Redistributions of
-	 *            source code must retain the above copyright notice, this list
-	 *            of conditions and the following disclaimer. - Neither the name
-	 *            of Brahma Dathan or Sarnath Ramnath may be used to endorse or
-	 *            promote products derived from this software without specific
-	 *            prior written permission.
+	 *            - the use is for academic purpose only - Redistributions of source
+	 *            code must retain the above copyright notice, this list of
+	 *            conditions and the following disclaimer. - Neither the name of
+	 *            Brahma Dathan or Sarnath Ramnath may be used to endorse or promote
+	 *            products derived from this software without specific prior written
+	 *            permission.
 	 *
-	 *            The authors do not make any claims regarding the correctness
-	 *            of the code in this module and are not responsible for any
-	 *            loss or damage resulting from its use.
+	 *            The authors do not make any claims regarding the correctness of
+	 *            the code in this module and are not responsible for any loss or
+	 *            damage resulting from its use.
 	 */
 
 	/**
@@ -84,8 +84,7 @@ public class Store implements Serializable {
 		 * 
 		 */
 		public Product search(String productId) {
-			for (Iterator<Product> iterator = products.iterator(); iterator
-					.hasNext();) {
+			for (Iterator<Product> iterator = products.iterator(); iterator.hasNext();) {
 				Product product = (Product) iterator.next();
 				if (product.getId().equals(productId)) {
 					return product;
@@ -141,8 +140,7 @@ public class Store implements Serializable {
 		 * 
 		 */
 		public Member search(String memberId) {
-			for (Iterator<Member> iterator = members.iterator(); iterator
-					.hasNext();) {
+			for (Iterator<Member> iterator = members.iterator(); iterator.hasNext();) {
 				Member member = iterator.next();
 				if (member.getId().equals(memberId)) {
 					return member;
@@ -186,8 +184,8 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Private for the singleton pattern Creates the catalog and member
-	 * collection objects
+	 * Private for the singleton pattern Creates the catalog and member collection
+	 * objects
 	 */
 	private Store() {
 	}
@@ -216,10 +214,8 @@ public class Store implements Serializable {
 	 */
 	public Result addProduct(Request request) {// addBook
 		Result result = new Result();
-		Product product = new Product(request.getProductName(),
-				request.getProductId(),
-				Integer.parseInt(request.getProductReorderLevel()),
-				Double.parseDouble(request.getProductPrice()));
+		Product product = new Product(request.getProductName(), request.getProductId(),
+				Integer.parseInt(request.getProductReorderLevel()), Double.parseDouble(request.getProductPrice()));
 		if (catalog.insertProduct(product)) {
 			result.setResultCode(Result.OPERATION_COMPLETED);
 			result.setProductFields(product);
@@ -240,8 +236,7 @@ public class Store implements Serializable {
 	 */
 	public Result addMember(Request request) {
 		Result result = new Result();
-		Member member = new Member(request.getMemberName(),
-				request.getMemberAddress(), request.getMemberPhone(),
+		Member member = new Member(request.getMemberName(), request.getMemberAddress(), request.getMemberPhone(),
 				Double.parseDouble(request.getMemberFeePaid()));
 		if (members.insertMember(member)) {
 			result.setResultCode(Result.OPERATION_COMPLETED);
@@ -310,8 +305,8 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Returns an iterator to the transactions for a specific member on a
-	 * certain date
+	 * Returns an iterator to the transactions for a specific member on a certain
+	 * date
 	 * 
 	 * @param memberId member id
 	 * @param date     date of issue
@@ -322,7 +317,7 @@ public class Store implements Serializable {
 		if (member == null) {
 			return new LinkedList<Transaction>().iterator();
 		}
-		return member.getTransactionsOnDate(request.getDate());
+		return member.getTransactionsBetweenDates(request.getStartDate(), request.getEndDate());
 	}
 
 	/**
@@ -366,27 +361,25 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Returns an iterator to Member info. The Iterator returned is a safe one,
-	 * in the sense that only copies of the Member fields are assembled into the
+	 * Returns an iterator to Member info. The Iterator returned is a safe one, in
+	 * the sense that only copies of the Member fields are assembled into the
 	 * objects returned via next().
 	 * 
 	 * @return an Iterator to Result - only the Member fields are valid.
 	 */
 	public Iterator<Result> getMembers() {
-		return new SafeIterator<Member>(members.iterator(),
-				SafeIterator.MEMBER);
+		return new SafeIterator<Member>(members.iterator(), SafeIterator.MEMBER);
 	}
 
 	/**
-	 * Returns an iterator to Product info. The Iterator returned is a safe one,
-	 * in the sense that only copies of the Product fields are assembled into
-	 * the objects returned via next().
+	 * Returns an iterator to Product info. The Iterator returned is a safe one, in
+	 * the sense that only copies of the Product fields are assembled into the
+	 * objects returned via next().
 	 * 
 	 * @return an Iterator to Result - only the Product fields are valid.
 	 */
 	public Iterator<Result> getProducts() {
-		return new SafeIterator<Product>(catalog.iterator(),
-				SafeIterator.PRODUCT);
+		return new SafeIterator<Product>(catalog.iterator(), SafeIterator.PRODUCT);
 	}
 
 	/**
