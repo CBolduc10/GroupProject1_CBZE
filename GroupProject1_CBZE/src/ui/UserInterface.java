@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import business.entities.Transaction;
+import business.entities.TransactionItem;
 import business.facade.Request;
 import business.facade.Result;
 import business.facade.Store;
@@ -394,22 +395,26 @@ public class UserInterface {
 
 	/**
 	 * Method to be called for displaying transactions. Prompts the user for the
-	 * appropriate values and uses the appropriate Library method for displaying
+	 * appropriate values and uses the appropriate Store method for displaying
 	 * transactions.
 	 * 
 	 */
 	public void getTransactions() {
 		Request.instance().setMemberId(getToken("Enter member id"));
-		Request.instance().setDate(getDate(
+		Request.instance().setStartDate(getDate(
 				"Please enter the beginning date of the period for which you want records as mm/dd/yy"));
-		Request.instance().setDate(getDate(
+		Request.instance().setEndDate(getDate(
 				"Please enter the end date of the period for which you want records as mm/dd/yy"));
 		Iterator<Transaction> result = store
 				.getTransactions(Request.instance());
 		while (result.hasNext()) {
 			Transaction transaction = (Transaction) result.next();
-			System.out.println(transaction.getType() + "   "
-					+ transaction.getTitle() + "\n");//
+			System.out.println(transaction.getDate());
+			for (TransactionItem ti : transaction.getItems()) {
+				System.out.println(ti.getName() + " " + ti.getPrice() + " "
+						+ ti.getQuantity() + " " + ti.getTotal());
+			}
+			System.out.println(transaction.getTransactionTotal() + "\n");
 		}
 		System.out.println("\n End of transactions \n");
 	}
