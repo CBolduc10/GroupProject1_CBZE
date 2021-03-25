@@ -56,7 +56,8 @@ public class Member implements Serializable {
 	 * @param date the date for which the transactions have to be retrieved
 	 * @return the iterator to the collection
 	 */
-	public Iterator<Transaction> getTransactionsBetweenDates(Calendar startDate, Calendar endDate) {
+	public Iterator<Transaction> getTransactionsBetweenDates(Calendar startDate,
+			Calendar endDate) {
 		return new FilteredIterator(transactions.iterator(),
 				transaction -> transaction.betweenDates(startDate, endDate));
 	}
@@ -155,10 +156,12 @@ public class Member implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		String string = "[Member Name: " + name + " || Address: " + address + " || ID: " + id + " || Phone: " + phone
-				+ " || Date Joined: " + dateJoined + " || Fee Paid: " + feePaid;
+		String string = "[Member Name: " + name + " || Address: " + address
+				+ " || ID: " + id + " || Phone: " + phone + " || Date Joined: "
+				+ dateJoined + " || Fee Paid: " + feePaid;
 		string += "] transactions: [";
-		for (Iterator<Transaction> iterator = transactions.iterator(); iterator.hasNext();) {
+		for (Iterator<Transaction> iterator = transactions.iterator(); iterator
+				.hasNext();) {
 			string += (Transaction) iterator.next();
 		}
 		string += "]";
@@ -206,7 +209,8 @@ public class Member implements Serializable {
 		output.writeObject(idCounter);
 	}
 
-	public static void retrieve(ObjectInputStream input) throws IOException, ClassNotFoundException {
+	public static void retrieve(ObjectInputStream input)
+			throws IOException, ClassNotFoundException {
 		idCounter = (int) input.readObject();
 	}
 
