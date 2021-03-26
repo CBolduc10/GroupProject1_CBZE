@@ -49,19 +49,19 @@ public class UserInterface {
 	private static Store store;
 	private static final int EXIT = 0;
 	private static final int ADD_MEMBER = 1;
-	private static final int REMOVE_MEMBER = 2;// ADD_BOOKS
-	private static final int ADD_PRODUCT = 3;// ISSUE_BOOKS
-	private static final int CHECK_OUT = 4;// RETURN_BOOKS
-	private static final int PROCESS_SHIPMENT = 5;// RENEW_BOOKS
-	private static final int CHANGE_PRICE = 6;// REMOVE_BOOKS
-	private static final int PRODUCT_INFORMATION = 7;// PLACE_HOLD
-	private static final int MEMBER_INFORMATION = 8;// REMOVE_HOLD
-	private static final int PRINT_TRANSACTIONS = 9;// PROCESS_HOLD
-	private static final int OUTSTANDING_ORDERS = 10;// GET_TRANSACTIONS
-	private static final int GET_MEMBERS = 11;
-	private static final int GET_PRODUCTS = 12;// GET_BOOKS
-	private static final int SAVE = 13;
-	private static final int HELP = 14;
+	private static final int REMOVE_MEMBER = 2;// REMOVE MEMBER
+	private static final int ADD_PRODUCT = 3;// ADD PRODUCT
+	private static final int CHECK_OUT = 4;// CHECK OUT PRODUCTS
+	private static final int PROCESS_SHIPMENT = 5;// PROCESS INCOMING SHIPMENT
+	private static final int CHANGE_PRICE = 6;// MODIFY PRODUCT PRICE
+	private static final int PRODUCT_INFORMATION = 7;// DISPLAY PRODUCT INFORMATION
+	private static final int MEMBER_INFORMATION = 8;// DISPLAY MEMBER INFORMATION
+	private static final int PRINT_TRANSACTIONS = 9;// PRINT TRANSACTIONS
+	private static final int OUTSTANDING_ORDERS = 10;// GET OUTRSTANDING ORDERS
+	private static final int GET_MEMBERS = 11; // GET LIST OF ALL MEMBERS
+	private static final int GET_PRODUCTS = 12;// GET LIST OF ALL PRODUCTS
+	private static final int SAVE = 13; // SAVE DATA
+	private static final int HELP = 14; //DISPLAY HELP
 
 	/**
 	 * Made private for singleton pattern. Conditionally looks for any saved
@@ -391,6 +391,51 @@ public class UserInterface {
 			}
 		} while (true);
 
+	}
+	
+	/**
+	 * Method to be called for displaying all products that contained entered
+	 * String. Prompts the user for a String, which then is compared to all existing
+	 * products. If a product is a superString of the user string, then its contents
+	 * are printed. This is done for all products in the system.
+	 */
+
+	public void getProductInformation() {
+		do {
+			Iterator<Result> iterator = store.getProducts();
+			String productName = getToken("Enter product name");
+			while (iterator.hasNext()) {
+				Result result = iterator.next();
+				if (result.getProductName().contains(productName)) {
+					System.out.println(
+							result.getProductName() + "  " + result.getProductId() + "  " + result.getProductPrice()
+									+ "  " + result.getProductStock() + "  " + result.getProductReorderLevel());
+				}
+			}
+			System.out.println("End of listing");
+		} while (yesOrNo("Get another product?"));
+	}
+	
+	/**
+	 * Method to be called for displaying all members that contained entered String.
+	 * Prompts the user for a String, which then is compared to all existing members
+	 * in the MemberList. If a member name is a superString of the user String, then
+	 * its contents are printed. This is done for all products in the system.
+	 */
+
+	public void getMemberInformation() {
+		do {
+			Iterator<Result> iterator = store.getMembers();
+			String memberName = getToken("Enter member name");
+			while (iterator.hasNext()) {
+				Result result = iterator.next();
+				if (result.getMemberName().contains(memberName)) {
+					System.out.println(result.getMemberName() + "  " + result.getMemberAddress() + "  "
+							+ result.getMemberFeePaid() + "  " + result.getMemberId());
+				}
+			}
+			System.out.println("End of listing");
+		} while (yesOrNo("Lookup another Member?"));
 	}
 
 	/**
