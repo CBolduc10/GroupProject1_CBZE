@@ -30,8 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import business.entities.Member;
+import business.entities.Order;
 import business.entities.Product;
 import business.entities.Transaction;
+import business.entities.TransactionItem;
 import business.entities.iterators.SafeIterator;
 
 /**
@@ -44,6 +46,7 @@ public class Store implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Catalog catalog = new Catalog();
 	private MemberList members = new MemberList();
+	private OrderList orders = new OrderList();
 	private static Store store;
 
 	/**
@@ -51,20 +54,71 @@ public class Store implements Serializable {
 	 * @author Brahma Dathan and Sarnath Ramnath
 	 * @Copyright (c) 2010
 	 * 
-	 *            Redistribution and use with or without modification, are permitted
-	 *            provided that the following conditions are met:
+	 *            Redistribution and use with or without modification, are
+	 *            permitted provided that the following conditions are met:
 	 *
-	 *            - the use is for academic purpose only - Redistributions of source
-	 *            code must retain the above copyright notice, this list of
-	 *            conditions and the following disclaimer. - Neither the name of
-	 *            Brahma Dathan or Sarnath Ramnath may be used to endorse or promote
-	 *            products derived from this software without specific prior written
-	 *            permission.
+	 *            - the use is for academic purpose only - Redistributions of
+	 *            source code must retain the above copyright notice, this list
+	 *            of conditions and the following disclaimer. - Neither the name
+	 *            of Brahma Dathan or Sarnath Ramnath may be used to endorse or
+	 *            promote products derived from this software without specific
+	 *            prior written permission.
 	 *
-	 *            The authors do not make any claims regarding the correctness of
-	 *            the code in this module and are not responsible for any loss or
-	 *            damage resulting from its use.
+	 *            The authors do not make any claims regarding the correctness
+	 *            of the code in this module and are not responsible for any
+	 *            loss or damage resulting from its use.
 	 */
+
+	private class OrderList implements Iterable<Order>, Serializable {
+		private static final long serialVersionUID = 1L;
+		private List<Order> orders = new LinkedList<Order>();
+
+		/**
+		 * Checks whether a product with a given book id exists.
+		 * 
+		 * @param productId the id of the product
+		 * @return true iff the book exists
+		 * 
+		 */
+		public Order search(String orderId) {
+			for (Iterator<Order> iterator = orders.iterator(); iterator
+					.hasNext();) {
+				Order order = (Order) iterator.next();
+				if (order.getId().equals(orderId)) {
+					return order;
+				}
+			}
+			return null;
+		}
+
+		/**
+		 * Inserts a product into the collection
+		 * 
+		 * @param product the product to be inserted
+		 * @return true iff the product could be inserted. Currently always true
+		 */
+		public boolean insertOrder(Order order) {// insertBook
+			orders.add(order);
+			return true;
+		}
+
+		/**
+		 * Returns an iterator to all books
+		 * 
+		 * @return iterator to the collection
+		 */
+		public Iterator<Order> iterator() {
+			return orders.iterator();
+		}
+
+		/**
+		 * String form of the collection
+		 * 
+		 */
+		public String toString() {
+			return orders.toString();
+		}
+	}
 
 	/**
 	 * The collection class for Product objects
@@ -84,7 +138,8 @@ public class Store implements Serializable {
 		 * 
 		 */
 		public Product search(String productId) {
-			for (Iterator<Product> iterator = products.iterator(); iterator.hasNext();) {
+			for (Iterator<Product> iterator = products.iterator(); iterator
+					.hasNext();) {
 				Product product = (Product) iterator.next();
 				if (product.getId().equals(productId)) {
 					return product;
@@ -140,7 +195,8 @@ public class Store implements Serializable {
 		 * 
 		 */
 		public Member search(String memberId) {
-			for (Iterator<Member> iterator = members.iterator(); iterator.hasNext();) {
+			for (Iterator<Member> iterator = members.iterator(); iterator
+					.hasNext();) {
 				Member member = iterator.next();
 				if (member.getId().equals(memberId)) {
 					return member;
@@ -184,8 +240,8 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Private for the singleton pattern Creates the catalog and member collection
-	 * objects
+	 * Private for the singleton pattern Creates the catalog and member
+	 * collection objects
 	 */
 	private Store() {
 	}
@@ -214,8 +270,10 @@ public class Store implements Serializable {
 	 */
 	public Result addProduct(Request request) {// addBook
 		Result result = new Result();
-		Product product = new Product(request.getProductName(), request.getProductId(),
-				Integer.parseInt(request.getProductReorderLevel()), Double.parseDouble(request.getProductPrice()));
+		Product product = new Product(request.getProductName(),
+				request.getProductId(),
+				Integer.parseInt(request.getProductReorderLevel()),
+				Double.parseDouble(request.getProductPrice()));
 		if (catalog.insertProduct(product)) {
 			result.setResultCode(Result.OPERATION_COMPLETED);
 			result.setProductFields(product);
@@ -236,7 +294,8 @@ public class Store implements Serializable {
 	 */
 	public Result addMember(Request request) {
 		Result result = new Result();
-		Member member = new Member(request.getMemberName(), request.getMemberAddress(), request.getMemberPhone(),
+		Member member = new Member(request.getMemberName(),
+				request.getMemberAddress(), request.getMemberPhone(),
 				Double.parseDouble(request.getMemberFeePaid()));
 		if (members.insertMember(member)) {
 			result.setResultCode(Result.OPERATION_COMPLETED);
@@ -277,13 +336,56 @@ public class Store implements Serializable {
 			return result;
 		}
 		if (product.setPrice(Double.parseDouble(request.getProductPrice()))) {
-			result.setProductName(request.getProductName());
-			result.setProductPrice(request.getProductPrice());
+			result.setProductName(product.getName());
+			result.setProductPrice(String.valueOf((product.getPrice())));
 			result.setResultCode(Result.OPERATION_COMPLETED);
 			return result;
 		}
 		result.setResultCode(Result.OPERATION_FAILED);
 		return result;
+	}
+
+	public Result purchaseProducts(Request request) {
+		Result result = new Result();
+		Member member = members.search(request.getMemberId());
+		if (member == null) {
+			result.setResultCode(Result.NO_SUCH_MEMBER);
+			return result;
+		}
+		result.setMemberFields(member);
+		Product product = catalog.search(request.getProductId());
+		if (product == null) {
+			result.setResultCode(Result.NO_SUCH_PRODUCT);
+			return result;
+		}
+		Transaction transaction = member.getCurrentTransaction();
+		TransactionItem item = new TransactionItem(product,
+				Integer.parseInt(request.getItemQuantity()));
+		if (!transaction.addItem(item) || product.setStock(product.getStock()
+				- Integer.parseInt(request.getItemQuantity())) == false) {
+			result.setResultCode(Result.OPERATION_FAILED);
+		} else {
+			result.setProductFields(product);
+			transaction.addItem(item);
+			if (product.checkReorder()) {
+				Order order = new Order(product.getId(),
+						product.getReorderLevel() * 2);
+				result.setOrderQuantity(String.valueOf(order.getQuantity()));
+				result.setOrderId(order.getId());
+			}
+			product.setStock(product.getStock()
+					- Integer.parseInt(request.getItemQuantity()));
+			result.setResultCode(Result.OPERATION_COMPLETED);
+			result.setItemQuantity(String.valueOf(item.getQuantity()));
+			result.setItemTotal(String.valueOf(item.getTotal()));
+			result.setTransactionTotal(String.valueOf(transaction.getTotal()));
+		}
+		return result;
+	}
+
+	public void createTransaction(Request request) {
+		Member member = members.search(request.getMemberId());
+		member.addTransaction(new Transaction());
 	}
 
 	/**
@@ -305,8 +407,8 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Returns an iterator to the transactions for a specific member on a certain
-	 * date
+	 * Returns an iterator to the transactions for a specific member on a
+	 * certain date
 	 * 
 	 * @param memberId member id
 	 * @param date     date of issue
@@ -317,7 +419,8 @@ public class Store implements Serializable {
 		if (member == null) {
 			return new LinkedList<Transaction>().iterator();
 		}
-		return member.getTransactionsBetweenDates(request.getStartDate(), request.getEndDate());
+		return member.getTransactionsBetweenDates(request.getStartDate(),
+				request.getEndDate());
 	}
 
 	/**
@@ -361,25 +464,27 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Returns an iterator to Member info. The Iterator returned is a safe one, in
-	 * the sense that only copies of the Member fields are assembled into the
+	 * Returns an iterator to Member info. The Iterator returned is a safe one,
+	 * in the sense that only copies of the Member fields are assembled into the
 	 * objects returned via next().
 	 * 
 	 * @return an Iterator to Result - only the Member fields are valid.
 	 */
 	public Iterator<Result> getMembers() {
-		return new SafeIterator<Member>(members.iterator(), SafeIterator.MEMBER);
+		return new SafeIterator<Member>(members.iterator(),
+				SafeIterator.MEMBER);
 	}
 
 	/**
-	 * Returns an iterator to Product info. The Iterator returned is a safe one, in
-	 * the sense that only copies of the Product fields are assembled into the
-	 * objects returned via next().
+	 * Returns an iterator to Product info. The Iterator returned is a safe one,
+	 * in the sense that only copies of the Product fields are assembled into
+	 * the objects returned via next().
 	 * 
 	 * @return an Iterator to Result - only the Product fields are valid.
 	 */
 	public Iterator<Result> getProducts() {
-		return new SafeIterator<Product>(catalog.iterator(), SafeIterator.PRODUCT);
+		return new SafeIterator<Product>(catalog.iterator(),
+				SafeIterator.PRODUCT);
 	}
 
 	/**
@@ -389,5 +494,21 @@ public class Store implements Serializable {
 	@Override
 	public String toString() {
 		return catalog + "\n" + members;
+	}
+
+	public Result getChange(Request request) {
+		Result result = new Result();
+		Member member = members.search(request.getMemberId());
+		if (member == null) {
+			result.setResultCode(Result.NO_SUCH_MEMBER);
+			return result;
+		}
+		Transaction transaction = member.getCurrentTransaction();
+		transaction
+				.setPayment(Double.parseDouble(request.getTransactionChange()));
+		result.setTransactionChange(
+				String.valueOf(transaction.processTransaction()));
+
+		return result;
 	}
 }

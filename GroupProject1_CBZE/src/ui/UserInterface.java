@@ -54,14 +54,14 @@ public class UserInterface {
 	private static final int CHECK_OUT = 4;// CHECK OUT PRODUCTS
 	private static final int PROCESS_SHIPMENT = 5;// PROCESS INCOMING SHIPMENT
 	private static final int CHANGE_PRICE = 6;// MODIFY PRODUCT PRICE
-	private static final int PRODUCT_INFORMATION = 7;// DISPLAY PRODUCT INFORMATION
-	private static final int MEMBER_INFORMATION = 8;// DISPLAY MEMBER INFORMATION
+	private static final int PRODUCT_INFORMATION = 7;// DISPLAY PRODUCT INFO
+	private static final int MEMBER_INFORMATION = 8;// DISPLAY MEMBER INFO
 	private static final int PRINT_TRANSACTIONS = 9;// PRINT TRANSACTIONS
 	private static final int OUTSTANDING_ORDERS = 10;// GET OUTRSTANDING ORDERS
 	private static final int GET_MEMBERS = 11; // GET LIST OF ALL MEMBERS
 	private static final int GET_PRODUCTS = 12;// GET LIST OF ALL PRODUCTS
 	private static final int SAVE = 13; // SAVE DATA
-	private static final int HELP = 14; //DISPLAY HELP
+	private static final int HELP = 14; // DISPLAY HELP
 
 	/**
 	 * Made private for singleton pattern. Conditionally looks for any saved
@@ -321,20 +321,36 @@ public class UserInterface {
 					"No member with id " + Request.instance().getMemberId());
 			return;
 		}
+		store.createTransaction(Request.instance());
 		do {
 			Request.instance().setProductId(getToken("Enter product id"));
 			Request.instance()
-					.setProductStock(getToken("Enter product quantity"));
+					.setItemQuantity(getName("Enter product quantity"));
 			result = store.purchaseProducts(Request.instance());
+			if (result.getResultCode() == Result.NO_SUCH_PRODUCT) {
+				System.out.println("Product not found");
+			}
 			if (result.getResultCode() == Result.OPERATION_COMPLETED) {
-				System.out.println("Product " + result.getProductName()
-						+ " Qty " + result.getProductStock()
-						+ result.getMemberName()//
-						+ " checked out by " + result.getMemberName());//
+				System.out.println(
+						result.getProductName() + " " + result.getItemQuantity()
+								+ " $" + result.getProductPrice() + " $"
+								+ result.getItemTotal());
 			} else {
 				System.out.println("Product could not be purchased");
 			}
+			System.out.println("Subtotal: $" + result.getTransactionTotal());
+			if (result.getOrderId() != "none") {
+				System.out.println("Reordered " + result.getOrderQuantity()
+						+ " of " + result.getProductName() + " as order number "
+						+ result.getOrderId());
+			}
+
 		} while (yesOrNo("Check out more products?"));
+		System.out
+				.println("Transaction Total: " + result.getTransactionTotal());
+		Request.instance().setTransactionChange(getToken("Enter cash value: "));
+		result = store.getChange(Request.instance());
+		System.out.println("Change owed: " + result.getTransactionChange());
 	}
 
 	/**
@@ -344,19 +360,7 @@ public class UserInterface {
 	 * 
 	 */
 	public void processShipments() {
-		do {
-			Request.instance().setOrderId(getToken("Enter order id"));
-			Result result = store.processHold(Request.instance());
-			if (result.getResultCode() == Result.OPERATION_COMPLETED) {
-				System.out
-						.println("Order " + result.getOrderId() + " processed");//
-			} else {
-				System.out.println("No shipments left to be processed");
-			}
-			if (!yesOrNo("Process another shipment?")) {
-				break;
-			}
-		} while (true);
+
 	}
 
 	/**
@@ -392,12 +396,12 @@ public class UserInterface {
 		} while (true);
 
 	}
-	
+
 	/**
 	 * Method to be called for displaying all products that contained entered
-	 * String. Prompts the user for a String, which then is compared to all existing
-	 * products. If a product is a superString of the user string, then its contents
-	 * are printed. This is done for all products in the system.
+	 * String. Prompts the user for a String, which then is compared to all
+	 * existing products. If a product is a superString of the user string, then
+	 * its contents are printed. This is done for all products in the system.
 	 */
 
 	public void getProductInformation() {
@@ -407,20 +411,23 @@ public class UserInterface {
 			while (iterator.hasNext()) {
 				Result result = iterator.next();
 				if (result.getProductName().contains(productName)) {
-					System.out.println(
-							result.getProductName() + "  " + result.getProductId() + "  " + result.getProductPrice()
-									+ "  " + result.getProductStock() + "  " + result.getProductReorderLevel());
+					System.out.println(result.getProductName() + "  "
+							+ result.getProductId() + "  "
+							+ result.getProductPrice() + "  "
+							+ result.getProductStock() + "  "
+							+ result.getProductReorderLevel());
 				}
 			}
 			System.out.println("End of listing");
 		} while (yesOrNo("Get another product?"));
 	}
-	
+
 	/**
-	 * Method to be called for displaying all members that contained entered String.
-	 * Prompts the user for a String, which then is compared to all existing members
-	 * in the MemberList. If a member name is a superString of the user String, then
-	 * its contents are printed. This is done for all products in the system.
+	 * Method to be called for displaying all members that contained entered
+	 * String. Prompts the user for a String, which then is compared to all
+	 * existing members in the MemberList. If a member name is a superString of
+	 * the user String, then its contents are printed. This is done for all
+	 * products in the system.
 	 */
 
 	public void getMemberInformation() {
@@ -430,8 +437,10 @@ public class UserInterface {
 			while (iterator.hasNext()) {
 				Result result = iterator.next();
 				if (result.getMemberName().contains(memberName)) {
-					System.out.println(result.getMemberName() + "  " + result.getMemberAddress() + "  "
-							+ result.getMemberFeePaid() + "  " + result.getMemberId());
+					System.out.println(result.getMemberName() + "  "
+							+ result.getMemberAddress() + "  "
+							+ result.getMemberFeePaid() + "  "
+							+ result.getMemberId());
 				}
 			}
 			System.out.println("End of listing");
@@ -459,7 +468,7 @@ public class UserInterface {
 				System.out.println(ti.getName() + " " + ti.getPrice() + " "
 						+ ti.getQuantity() + " " + ti.getTotal());
 			}
-			System.out.println(transaction.getTransactionTotal() + "\n");
+			System.out.println(transaction.getTotal() + "\n");
 		}
 		System.out.println("\n End of transactions \n");
 	}

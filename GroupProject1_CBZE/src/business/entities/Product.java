@@ -33,10 +33,11 @@ public class Product implements Serializable {
 		this.price = price;
 	}
 
-	public void reorderLevel() {
+	public boolean checkReorder() {
 		if (this.stock <= this.reorderLevel) {
-
+			return true;
 		}
+		return false;
 	}
 
 	public String getName() {
@@ -67,8 +68,12 @@ public class Product implements Serializable {
 		this.id = id;
 	}
 
-	public void setStock(int stock) {
-		this.stock = stock;
+	public boolean setStock(int stock) {
+		if (this.stock - stock >= 0) {
+			this.stock = stock;
+			return true;
+		}
+		return false;
 	}
 
 	public boolean setPrice(double price) {
