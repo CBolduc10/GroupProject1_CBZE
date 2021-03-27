@@ -9,36 +9,34 @@ import java.io.Serializable;
  */
 public class Order implements Serializable {
 	private static final long serialVersionUID = 1L;
+	private static final String ORDER_STRING = "O";
+	private static int idCounter;
 	private String id;
 	private String productId;
 	private int quantity;
-	
-	public Order(String id, String productId, int quantity) {
-		this.id = id;
+
+	public Order(String productId, int quantity) {
+		this.id = ORDER_STRING + ++idCounter;
 		this.productId = productId;
 		this.quantity = quantity;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
-	
+
 	public String getProductId() {
 		return productId;
 	}
-	
+
 	public int getQuantity() {
 		return quantity;
 	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
-	
+
 	public void setProductId(String productId) {
 		this.productId = productId;
 	}
-	
+
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
@@ -48,7 +46,8 @@ public class Order implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((productId == null) ? 0 : productId.hashCode());
+		result = prime * result
+				+ ((productId == null) ? 0 : productId.hashCode());
 		result = prime * result + quantity;
 		return result;
 	}
@@ -79,8 +78,8 @@ public class Order implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", productId=" + productId + ", quantity=" + quantity + "]";
+		return "Order [id=" + id + ", productId=" + productId + ", quantity="
+				+ quantity + "]";
 	}
-	
-	
+
 }

@@ -50,6 +50,14 @@ public class Member implements Serializable {
 		return transactions.add(transaction);
 	}
 
+	public Transaction getCurrentTransaction() {
+		return transactions.get(transactions.size() - 1);
+	}
+
+	public boolean isEmpty() {
+		return this.transactions.isEmpty();
+	}
+
 	/**
 	 * Gets an iterator to a collection of selected transactions
 	 * 

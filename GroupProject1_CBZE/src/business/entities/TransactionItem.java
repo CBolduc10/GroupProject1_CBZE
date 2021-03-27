@@ -1,6 +1,9 @@
 package business.entities;
 
-public class TransactionItem {
+import java.io.Serializable;
+
+public class TransactionItem implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private String id;
 	private int quantity;

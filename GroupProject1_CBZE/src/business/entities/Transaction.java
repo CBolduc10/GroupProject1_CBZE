@@ -38,7 +38,7 @@ public class Transaction implements Serializable {
 	private Calendar date;
 	private double total;
 	private double payment;
-	private String id;
+	private boolean completed;
 	private Iterator<TransactionItem> iterator;
 
 	/**
@@ -49,10 +49,10 @@ public class Transaction implements Serializable {
 	 * @param title The title of the book
 	 * 
 	 */
-	public Transaction(Member member) {
+	public Transaction() {
 		items = new LinkedList<TransactionItem>();
 		date = new GregorianCalendar();
-		this.id = member.getId();
+		this.setCompleted(false);
 		this.total = 0;
 		this.payment = 0;
 	}
@@ -61,8 +61,8 @@ public class Transaction implements Serializable {
 		return payment;
 	}
 
-	public String getId() {
-		return id;
+	public double getTotal() {
+		return total;
 	}
 
 	public void setTotal(double total) {
@@ -71,10 +71,6 @@ public class Transaction implements Serializable {
 
 	public void setPayment(double payment) {
 		this.payment = payment;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	/**
@@ -103,16 +99,9 @@ public class Transaction implements Serializable {
 												.get(Calendar.DATE)))));
 	}
 
-	public double getTransactionTotal() {
-		while (iterator.hasNext()) {
-			TransactionItem item = iterator.next();
-			total += item.getTotal();
-		}
-		return total;
-	}
-
 	public double processTransaction() {
-		double change = total - payment;
+		double change = Math.abs(total - payment);
+		this.setCompleted(true);
 		return change;
 	}
 
@@ -125,9 +114,9 @@ public class Transaction implements Serializable {
 	 * 
 	 * @param product the Product object to be added
 	 */
-	public boolean addItem(Product product, int quantity) {
-		TransactionItem item = new TransactionItem(product, quantity);
+	public boolean addItem(TransactionItem item) {
 		items.add(item);
+		this.total += item.getTotal();
 		return true;
 	}
 
@@ -137,8 +126,9 @@ public class Transaction implements Serializable {
 	 * @return date with month, date, and year
 	 */
 	public String getDate() {
-		return date.get(Calendar.MONTH) + "/" + date.get(Calendar.DATE) + "/"
-				+ date.get(Calendar.YEAR);
+		return (this.date.get(Calendar.MONTH) + 1) + "/"
+				+ this.date.get(Calendar.DATE) + "/"
+				+ this.date.get(Calendar.YEAR);
 	}
 
 	/**
@@ -148,8 +138,16 @@ public class Transaction implements Serializable {
 	@Override
 	public String toString() {
 		return "Transaction [items=" + items + ", date=" + date + ", total="
-				+ total + ", payment=" + payment + ", id=" + id + ", iterator="
-				+ iterator + "]";
+				+ total + ", payment=" + payment + ", iterator=" + iterator
+				+ "]";
+	}
+
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
 	}
 
 }

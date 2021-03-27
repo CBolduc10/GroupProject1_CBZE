@@ -18,12 +18,18 @@ public abstract class DataTransfer {
 	private String productStock;
 	private String productPrice;
 	private String productReorderLevel;
+	private String itemQuantity;
+	private String itemTotal;
+	private String transactionTotal;
+	private String transactionChange;
 	private String memberId;
 	private String memberName;
 	private String memberAddress;
 	private String memberPhone;
 	private String memberDateJoined;
 	private String memberFeePaid;
+	private String orderId;
+	private String orderQuantity;
 
 	/**
 	 * This sets all fields to "none".
@@ -162,12 +168,64 @@ public abstract class DataTransfer {
 		productStock = "none";
 		productPrice = "none";
 		productReorderLevel = "none";
+		itemQuantity = "none";
+		itemTotal = "none";
+		setOrderId("none");
+		setOrderQuantity("none");
 		memberId = "none";
 		memberName = "none";
 		memberPhone = "none";
 		memberAddress = "none";
 		memberDateJoined = "none";
 		memberFeePaid = "none";
+	}
+
+	public String getItemQuantity() {
+		return itemQuantity;
+	}
+
+	public void setItemQuantity(String itemQuantity) {
+		this.itemQuantity = itemQuantity;
+	}
+
+	public String getItemTotal() {
+		return itemTotal;
+	}
+
+	public void setItemTotal(String itemTotal) {
+		this.itemTotal = itemTotal;
+	}
+
+	public String getTransactionTotal() {
+		return transactionTotal;
+	}
+
+	public void setTransactionTotal(String transactionTotal) {
+		this.transactionTotal = transactionTotal;
+	}
+
+	public String getTransactionChange() {
+		return transactionChange;
+	}
+
+	public void setTransactionChange(String transactionChange) {
+		this.transactionChange = transactionChange;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getOrderQuantity() {
+		return orderQuantity;
+	}
+
+	public void setOrderQuantity(String orderQuantity) {
+		this.orderQuantity = orderQuantity;
 	}
 
 }
