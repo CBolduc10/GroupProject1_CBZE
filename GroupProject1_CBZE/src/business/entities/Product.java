@@ -33,6 +33,12 @@ public class Product implements Serializable {
 		this.price = price;
 	}
 
+	/**
+	 * Method to check if a product's stock has been depleted to the reorder
+	 * level or below.
+	 * 
+	 * @return true or false iff stock is less than or equal to reorder level.
+	 */
 	public boolean checkReorder() {
 		if (this.stock <= this.reorderLevel) {
 			return true;
@@ -40,34 +46,76 @@ public class Product implements Serializable {
 		return false;
 	}
 
+	/**
+	 * Getter for product's name.
+	 * 
+	 * @return name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Getter for product's id.
+	 * 
+	 * @return id
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * Getter for product's stock.
+	 * 
+	 * @return stock
+	 */
 	public int getStock() {
 		return stock;
 	}
 
+	/**
+	 * Getter for product's price.
+	 * 
+	 * @return price
+	 */
 	public double getPrice() {
 		return price;
 	}
 
+	/**
+	 * Getter for product's reorder level.
+	 * 
+	 * @return reorderLevel
+	 */
 	public int getReorderLevel() {
 		return reorderLevel;
 	}
 
+	/**
+	 * Setter for product's name.
+	 * 
+	 * @param name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Setter for product's id.
+	 * 
+	 * @param id
+	 */
 	public void setId(String id) {
 		this.id = id;
 	}
 
+	/**
+	 * Setter for product's stock (ensures stock cannot be less than 0 after
+	 * update).
+	 * 
+	 * @param stock
+	 * @return true or false if updated successfully
+	 */
 	public boolean setStock(int stock) {
 		if (this.stock - stock >= 0) {
 			this.stock = stock;
@@ -76,11 +124,22 @@ public class Product implements Serializable {
 		return false;
 	}
 
+	/**
+	 * Setter for product price.
+	 * 
+	 * @param price
+	 * @return true or false if successful
+	 */
 	public boolean setPrice(double price) {
 		this.price = price;
 		return true;
 	}
 
+	/**
+	 * Setter for product's reorder level.
+	 * 
+	 * @param reorderLevel
+	 */
 	public void setReorderLevel(int reorderLevel) {
 		this.reorderLevel = reorderLevel;
 	}
@@ -93,6 +152,12 @@ public class Product implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Checks whether the product is equal to the one supplied
+	 * 
+	 * @param object the product that should be compared
+	 * @return true iff the product ids match
+	 */
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -115,6 +180,10 @@ public class Product implements Serializable {
 		return true;
 	}
 
+	/**
+	 * String form of the product
+	 * 
+	 */
 	@Override
 	public String toString() {
 		return "Product Name: " + name + "|| Product ID: " + id

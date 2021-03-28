@@ -2,23 +2,10 @@ package ui;
 
 /**
  * 
- * @author Brahma Dathan and Sarnath Ramnath
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  * @Copyright (c) 2010
- 
- * Redistribution and use with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   - the use is for academic purpose only
- *   - Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   - Neither the name of Brahma Dathan or Sarnath Ramnath
- *     may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * The authors do not make any claims regarding the correctness of the code in this module
- * and are not responsible for any loss or damage resulting from its use.  
  */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,9 +24,9 @@ import business.facade.Store;
 
 /**
  * 
- * This class implements the user interface for the Library project. The
- * commands are encoded as integers using a number of static final variables. A
- * number of utility methods exist to make it easier to parse the input.
+ * This class implements the user interface for the Store project. The commands
+ * are encoded as integers using a number of static final variables. A number of
+ * utility methods exist to make it easier to parse the input.
  *
  */
 public class UserInterface {
@@ -65,7 +52,7 @@ public class UserInterface {
 
 	/**
 	 * Made private for singleton pattern. Conditionally looks for any saved
-	 * data. Otherwise, it gets a singleton Library object.
+	 * data. Otherwise, it gets a singleton Store object.
 	 */
 	private UserInterface() {
 		if (yesOrNo("Look for saved data and use it?")) {
@@ -236,7 +223,7 @@ public class UserInterface {
 
 	/**
 	 * Method to be called for adding a member. Prompts the user for the
-	 * appropriate values and uses the appropriate Library method for adding the
+	 * appropriate values and uses the appropriate Store method for adding the
 	 * member.
 	 * 
 	 */
@@ -285,9 +272,9 @@ public class UserInterface {
 	}
 
 	/**
-	 * Method to be called for adding a book. Prompts the user for the
-	 * appropriate values and uses the appropriate Library method for adding the
-	 * book.
+	 * Method to be called for adding a product. Prompts the user for the
+	 * appropriate values and uses the appropriate Store method for adding the
+	 * product.
 	 * 
 	 */
 	public void addProducts() {
@@ -308,9 +295,9 @@ public class UserInterface {
 	}
 
 	/**
-	 * Method to be called for issuing books. Prompts the user for the
-	 * appropriate values and uses the appropriate Library method for issuing
-	 * books.
+	 * Method to be called for checking out products. Prompts the user for the
+	 * appropriate values and uses the appropriate Store method for purchasing
+	 * and paying for products.
 	 * 
 	 */
 	public void checkOutProducts() {
@@ -354,9 +341,9 @@ public class UserInterface {
 	}
 
 	/**
-	 * Method to be called for processing books. Prompts the user for the
-	 * appropriate values and uses the appropriate Library method for processing
-	 * books.
+	 * Method to be called for processing shipments. Prompts the user for the
+	 * appropriate values and uses the appropriate Store method for processing
+	 * orders after receiving shipments.
 	 * 
 	 */
 	public void processShipments() {
@@ -474,7 +461,7 @@ public class UserInterface {
 	}
 
 	/**
-	 * Displays all members
+	 * Displays all members by iterating through MemberList
 	 */
 	public void getMembers() {
 		Iterator<Result> iterator = store.getMembers();
@@ -492,7 +479,7 @@ public class UserInterface {
 	}
 
 	/**
-	 * Displays all outstanding orders
+	 * Displays all outstanding orders by iterating through OrderList.
 	 */
 	public void getOrders() {
 		Iterator<Result> iterator = store.getMembers();
@@ -509,7 +496,7 @@ public class UserInterface {
 	}
 
 	/**
-	 * Gets and prints all books.
+	 * Gets and prints all products.
 	 */
 	public void getProducts() {
 		Iterator<Result> iterator = store.getProducts();
@@ -526,8 +513,8 @@ public class UserInterface {
 	}
 
 	/**
-	 * Method to be called for saving the Library object. Uses the appropriate
-	 * Library method for saving.
+	 * Method to be called for saving the Store object. Uses the appropriate
+	 * Store method for saving.
 	 * 
 	 */
 	private void save() {
@@ -540,8 +527,8 @@ public class UserInterface {
 	}
 
 	/**
-	 * Method to be called for retrieving saved data. Uses the appropriate
-	 * Library method for retrieval.
+	 * Method to be called for retrieving saved data. Uses the appropriate Store
+	 * method for retrieval.
 	 * 
 	 */
 	private void retrieve() {
