@@ -82,54 +82,6 @@ public abstract class DataTransfer {
 		this.productReorderLevel = productReorderLevel;
 	}
 
-	public String getItemQuantity() {
-		return itemQuantity;
-	}
-
-	public void setItemQuantity(String itemQuantity) {
-		this.itemQuantity = itemQuantity;
-	}
-
-	public String getItemTotal() {
-		return itemTotal;
-	}
-
-	public void setItemTotal(String itemTotal) {
-		this.itemTotal = itemTotal;
-	}
-
-	public String getTransactionTotal() {
-		return transactionTotal;
-	}
-
-	public void setTransactionTotal(String transactionTotal) {
-		this.transactionTotal = transactionTotal;
-	}
-
-	public String getTransactionChange() {
-		return transactionChange;
-	}
-
-	public void setTransactionChange(String transactionChange) {
-		this.transactionChange = transactionChange;
-	}
-
-	public String getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
-
-	public String getOrderQuantity() {
-		return orderQuantity;
-	}
-
-	public void setOrderQuantity(String orderQuantity) {
-		this.orderQuantity = orderQuantity;
-	}
-
 	public String getMemberId() {
 		return memberId;
 	}
