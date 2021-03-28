@@ -274,7 +274,7 @@ public class Store implements Serializable {
 		Result result = new Result();
 		Member member = new Member(request.getMemberName(),
 				request.getMemberAddress(), request.getMemberPhone(),
-				Double.parseDouble(request.getMemberFeePaid()));
+				request.getMemberFeePaid());
 		if (members.insertMember(member)) {
 			result.setResultCode(Result.OPERATION_COMPLETED);
 			result.setMemberFields(member);

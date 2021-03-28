@@ -25,7 +25,7 @@ public class Member implements Serializable {
 	private String phone;
 	private String id;
 	private Calendar dateJoined;
-	private double feePaid;
+	private String feePaid;
 	private static final String MEMBER_STRING = "M";
 	private List<Transaction> transactions = new LinkedList<Transaction>();
 	private static int idCounter;
@@ -38,7 +38,7 @@ public class Member implements Serializable {
 	 * @param phone   phone number of the member
 	 * @param feePaid fee paid by member
 	 */
-	public Member(String name, String address, String phone, double feePaid) {
+	public Member(String name, String address, String phone, String feePaid) {
 		this.name = name;
 		this.address = address;
 		this.phone = phone;
@@ -151,7 +151,7 @@ public class Member implements Serializable {
 	 * 
 	 * @return fee paid
 	 */
-	public double getFeePaid() {
+	public String getFeePaid() {
 		return feePaid;
 	}
 
@@ -196,7 +196,7 @@ public class Member implements Serializable {
 	 * 
 	 * @param feePaid fee paid
 	 */
-	public void setFeePaid(double feePaid) {
+	public void setFeePaid(String feePaid) {
 		this.feePaid = feePaid;
 	}
 

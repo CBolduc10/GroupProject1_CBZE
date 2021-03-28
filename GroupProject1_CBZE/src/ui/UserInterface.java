@@ -21,6 +21,7 @@ import business.entities.TransactionItem;
 import business.facade.Request;
 import business.facade.Result;
 import business.facade.Store;
+import business.tests.AutomatedTester;
 
 /**
  * 
@@ -59,8 +60,11 @@ public class UserInterface {
 			retrieve();
 		} else {
 			store = Store.instance();
+			if (yesOrNo("Do you want to generate a test bed and invoke the functionality using asserts?")) {
+				AutomatedTester auto = new AutomatedTester();
+				auto.testAll();
+			}
 		}
-
 	}
 
 	/**
