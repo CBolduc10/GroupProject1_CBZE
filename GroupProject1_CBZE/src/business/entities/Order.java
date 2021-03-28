@@ -1,6 +1,8 @@
 package business.entities;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * 
@@ -13,12 +15,16 @@ public class Order implements Serializable {
 	private static int idCounter;
 	private String id;
 	private String productId;
+	private String productName;
 	private int quantity;
+	private Calendar date;
 
-	public Order(String productId, int quantity) {
+	public Order(String productId, String productName, int quantity) {
 		this.id = ORDER_STRING + ++idCounter;
 		this.productId = productId;
+		this.productName = productName;
 		this.quantity = quantity;
+		this.date = new GregorianCalendar();
 	}
 
 	public String getId() {
@@ -39,6 +45,25 @@ public class Order implements Serializable {
 
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	/**
+	 * Returns the date as a String
+	 * 
+	 * @return date with month, date, and year
+	 */
+	public String getDate() {
+		return ((this.date.get(Calendar.MONTH) + 1) + "/"
+				+ this.date.get(Calendar.DATE) + "/"
+				+ this.date.get(Calendar.YEAR));
 	}
 
 	@Override
@@ -79,7 +104,7 @@ public class Order implements Serializable {
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", productId=" + productId + ", quantity="
-				+ quantity + "]";
+				+ quantity + ", date =" + getDate() + "]";
 	}
 
 }

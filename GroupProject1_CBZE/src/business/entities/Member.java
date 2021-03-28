@@ -115,8 +115,15 @@ public class Member implements Serializable {
 		return id;
 	}
 
-	public Calendar getDateJoined() {
-		return dateJoined;
+	/**
+	 * Returns the dateJoined as a String
+	 * 
+	 * @return dateJoined with month, date, and year
+	 */
+	public String getDateJoined() {
+		return ((this.dateJoined.get(Calendar.MONTH) + 1) + "/"
+				+ this.dateJoined.get(Calendar.DATE) + "/"
+				+ this.dateJoined.get(Calendar.YEAR));
 	}
 
 	public double getFeePaid() {

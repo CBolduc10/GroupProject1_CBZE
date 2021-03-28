@@ -126,9 +126,9 @@ public class Transaction implements Serializable {
 	 * @return date with month, date, and year
 	 */
 	public String getDate() {
-		return (this.date.get(Calendar.MONTH) + 1) + "/"
+		return ((this.date.get(Calendar.MONTH) + 1) + "/"
 				+ this.date.get(Calendar.DATE) + "/"
-				+ this.date.get(Calendar.YEAR);
+				+ this.date.get(Calendar.YEAR));
 	}
 
 	/**

@@ -4,8 +4,10 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import business.entities.Member;
+import business.entities.Order;
 import business.entities.Product;
 import business.entities.iterators.SafeIterator.Type.SafeMember;
+import business.entities.iterators.SafeIterator.Type.SafeOrder;
 import business.entities.iterators.SafeIterator.Type.SafeProduct;
 import business.facade.Result;
 
@@ -19,7 +21,7 @@ import business.facade.Result;
  * 
  * @author Brahma Dathan
  *
- * @param <T> Either Book or Member
+ * @param <T> Either Book, Member or Order
  */
 public class SafeIterator<T> implements Iterator<Result> {
 	private Iterator<T> iterator;
@@ -27,6 +29,7 @@ public class SafeIterator<T> implements Iterator<Result> {
 	private Result result = new Result();
 	public static final Type PRODUCT = new SafeProduct();
 	public static final Type MEMBER = new SafeMember();
+	public static final Type ORDER = new SafeOrder();
 
 	/**
 	 * This class is designed to ensure that the appropriate object is used to
@@ -60,17 +63,27 @@ public class SafeIterator<T> implements Iterator<Result> {
 				result.setMemberFields(member);
 			}
 		}
+
+		public static class SafeOrder extends Type {
+			@Override
+			public void copy(Result result, Object object) {
+				Order order = (Order) object;
+				result.setOrderFields(order);
+			}
+		}
 	}
 
 	/**
-	 * The user of SafeIterator must supply an Iterator to Book or Member. If
-	 * Iterator<Book> is passed as the first parameter, SafeItearator.BOOK
-	 * should be passed as the second parameter. If Iterator<Member> is passed
-	 * as the first parameter, SafeItearator.MEMBER should be the second
-	 * parameter.
+	 * The user of SafeIterator must supply an Iterator to Book, Member or
+	 * Order. If Iterator<Book> is passed as the first parameter,
+	 * SafeItearator.BOOK should be passed as the second parameter. If
+	 * Iterator<Member> is passed as the first parameter, SafeItearator.MEMBER
+	 * should be the second parameter. If Iterator<Order> is passed as the first
+	 * parameter, SafeItearator.ORDER should be the second parameter.
 	 * 
-	 * @param iterator Iterator<Book> or Iterator<Member>
-	 * @param type     SafeItearator.BOOK or SafeItearator.MEMBER
+	 * @param iterator Iterator<Book>, Iterator<Member> or Iterator<Order>
+	 * @param type     SafeItearator.BOOK, SafeItearator.MEMBER or
+	 *                 SafeIterator.ORDER
 	 */
 	public SafeIterator(Iterator<T> iterator, Type type) {
 		this.iterator = iterator;

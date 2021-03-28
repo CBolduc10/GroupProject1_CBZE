@@ -1,6 +1,7 @@
 package business.facade;
 
 import business.entities.Member;
+import business.entities.Order;
 import business.entities.Product;
 
 /**
@@ -29,7 +30,10 @@ public abstract class DataTransfer {
 	private String memberDateJoined;
 	private String memberFeePaid;
 	private String orderId;
+	private String orderProductId;
+	private String orderProductName;
 	private String orderQuantity;
+	private String orderDate;
 
 	/**
 	 * This sets all fields to "none".
@@ -159,6 +163,14 @@ public abstract class DataTransfer {
 		productReorderLevel = String.valueOf(product.getReorderLevel());
 	}
 
+	public void setOrderFields(Order order) {
+		orderId = order.getId();
+		orderProductId = order.getProductId();
+		orderProductName = order.getProductName();
+		orderQuantity = String.valueOf(order.getQuantity());
+		orderDate = order.getDate();
+	}
+
 	/**
 	 * Sets all String fields to "none"
 	 */
@@ -172,6 +184,9 @@ public abstract class DataTransfer {
 		itemTotal = "none";
 		setOrderId("none");
 		setOrderQuantity("none");
+		orderProductId = "none";
+		orderProductName = "none";
+		orderDate = "none";
 		memberId = "none";
 		memberName = "none";
 		memberPhone = "none";
@@ -220,12 +235,36 @@ public abstract class DataTransfer {
 		this.orderId = orderId;
 	}
 
+	public String getOrderProductId() {
+		return orderProductId;
+	}
+
+	public void setOrderProductId(String orderProductId) {
+		this.orderProductId = orderProductId;
+	}
+
+	public String getOrderProductName() {
+		return orderProductName;
+	}
+
+	public void setOrderProductName(String orderProductName) {
+		this.orderProductName = orderProductName;
+	}
+
 	public String getOrderQuantity() {
 		return orderQuantity;
 	}
 
 	public void setOrderQuantity(String orderQuantity) {
 		this.orderQuantity = orderQuantity;
+	}
+
+	public String getOrderDate() {
+		return orderDate;
+	}
+
+	public void setOrderDate(String orderDate) {
+		this.orderDate = orderDate;
 	}
 
 }
