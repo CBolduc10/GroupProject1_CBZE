@@ -242,7 +242,7 @@ public class Store implements Serializable {
 	 * @param price  product price
 	 * @return the Product object created
 	 */
-	public Result addProduct(Request request) {// addBook
+	public Result addProduct(Request request) {
 		Result result = new Result();
 		Product product = new Product(request.getProductName(),
 				request.getProductId(),
