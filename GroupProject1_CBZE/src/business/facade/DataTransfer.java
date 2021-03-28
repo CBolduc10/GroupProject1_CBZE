@@ -4,12 +4,12 @@ import business.entities.Member;
 import business.entities.Product;
 
 /**
- * The DataTransfer class is used to facilitate data transfer between Library
- * and UserInterface. It is also used to support iterating over Member and
- * Product objects. The class stores copies of fields that may be sent in either
- * direction.
+ * The DataTransfer class is used to facilitate data transfer between Store and
+ * UserInterface. It is also used to support iterating over Member, Product,
+ * TransactionItem and Order objects. The class stores copies of fields that may
+ * be sent in either direction.
  * 
- * @author Brahma Dathan
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public abstract class DataTransfer {
@@ -76,6 +76,54 @@ public abstract class DataTransfer {
 
 	public void setProductReorderLevel(String productReorderLevel) {
 		this.productReorderLevel = productReorderLevel;
+	}
+
+	public String getItemQuantity() {
+		return itemQuantity;
+	}
+
+	public void setItemQuantity(String itemQuantity) {
+		this.itemQuantity = itemQuantity;
+	}
+
+	public String getItemTotal() {
+		return itemTotal;
+	}
+
+	public void setItemTotal(String itemTotal) {
+		this.itemTotal = itemTotal;
+	}
+
+	public String getTransactionTotal() {
+		return transactionTotal;
+	}
+
+	public void setTransactionTotal(String transactionTotal) {
+		this.transactionTotal = transactionTotal;
+	}
+
+	public String getTransactionChange() {
+		return transactionChange;
+	}
+
+	public void setTransactionChange(String transactionChange) {
+		this.transactionChange = transactionChange;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getOrderQuantity() {
+		return orderQuantity;
+	}
+
+	public void setOrderQuantity(String orderQuantity) {
+		this.orderQuantity = orderQuantity;
 	}
 
 	public String getMemberId() {
@@ -170,62 +218,14 @@ public abstract class DataTransfer {
 		productReorderLevel = "none";
 		itemQuantity = "none";
 		itemTotal = "none";
-		setOrderId("none");
-		setOrderQuantity("none");
+		orderId = "none";
+		orderQuantity = "none";
 		memberId = "none";
 		memberName = "none";
 		memberPhone = "none";
 		memberAddress = "none";
 		memberDateJoined = "none";
 		memberFeePaid = "none";
-	}
-
-	public String getItemQuantity() {
-		return itemQuantity;
-	}
-
-	public void setItemQuantity(String itemQuantity) {
-		this.itemQuantity = itemQuantity;
-	}
-
-	public String getItemTotal() {
-		return itemTotal;
-	}
-
-	public void setItemTotal(String itemTotal) {
-		this.itemTotal = itemTotal;
-	}
-
-	public String getTransactionTotal() {
-		return transactionTotal;
-	}
-
-	public void setTransactionTotal(String transactionTotal) {
-		this.transactionTotal = transactionTotal;
-	}
-
-	public String getTransactionChange() {
-		return transactionChange;
-	}
-
-	public void setTransactionChange(String transactionChange) {
-		this.transactionChange = transactionChange;
-	}
-
-	public String getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
-
-	public String getOrderQuantity() {
-		return orderQuantity;
-	}
-
-	public void setOrderQuantity(String orderQuantity) {
-		this.orderQuantity = orderQuantity;
 	}
 
 }

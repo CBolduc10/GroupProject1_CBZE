@@ -10,7 +10,7 @@ import business.entities.Transaction;
  * This class implements the Iterator interface to iterate only on items that
  * satisfy a certain predicate.
  * 
- * @author Brahma Dathan
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  * @param <T> the type of the item to be traversed
  */

@@ -2,22 +2,7 @@ package business.entities;
 
 /**
  * 
- * @author Brahma Dathan and Sarnath Ramnath
- * @Copyright (c) 2010
- 
- * Redistribution and use with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   - the use is for academic purpose only
- *   - Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   - Neither the name of Brahma Dathan or Sarnath Ramnath
- *     may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * The authors do not make any claims regarding the correctness of the code in this module
- * and are not responsible for any loss or damage resulting from its use.  
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  */
 import java.io.Serializable;
 import java.util.Calendar;
@@ -27,14 +12,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Represents a single Transaction (issue, renew, etc.)
- * 
- * @author Brahma Dathan
+ * Represents a single Transaction object corresponding to a specific member.
  *
  */
 public class Transaction implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private List<TransactionItem> items;
+	private List<TransactionItem> items = new LinkedList<TransactionItem>();;
 	private Calendar date;
 	private double total;
 	private double payment;
@@ -42,33 +25,48 @@ public class Transaction implements Serializable {
 	private Iterator<TransactionItem> iterator;
 
 	/**
-	 * Creates the transaction with a given type and book title. The date is the
-	 * current date.
-	 * 
-	 * @param type  The type of transaction
-	 * @param title The title of the book
+	 * Creates the transaction collection with a generated date, and both total
+	 * and payment set to 0.
 	 * 
 	 */
 	public Transaction() {
-		items = new LinkedList<TransactionItem>();
 		date = new GregorianCalendar();
-		this.setCompleted(false);
 		this.total = 0;
 		this.payment = 0;
 	}
 
+	/**
+	 * Getter for payment.
+	 * 
+	 * @return payment
+	 */
 	public double getPayment() {
 		return payment;
 	}
 
+	/**
+	 * Getter for transaction's total.
+	 * 
+	 * @return total
+	 */
 	public double getTotal() {
 		return total;
 	}
 
+	/**
+	 * Setter for transaction's total.
+	 * 
+	 * @param total
+	 */
 	public void setTotal(double total) {
 		this.total = total;
 	}
 
+	/**
+	 * Setter for payment of transaction.
+	 * 
+	 * @param payment
+	 */
 	public void setPayment(double payment) {
 		this.payment = payment;
 	}
@@ -99,20 +97,29 @@ public class Transaction implements Serializable {
 												.get(Calendar.DATE)))));
 	}
 
+	/**
+	 * Method to calculate the change owed after processing transaction.
+	 * 
+	 * @return change change owed to customer.
+	 */
 	public double processTransaction() {
 		double change = Math.abs(total - payment);
-		this.setCompleted(true);
 		return change;
 	}
 
+	/**
+	 * Returns an iterator to all transaction items in transaction.
+	 * 
+	 * @return iterator to the collection
+	 */
 	public List<TransactionItem> getItems() {
 		return items;
 	}
 
 	/**
-	 * Adds a Product object to the list.
+	 * Adds a TransactionItem object to the list. and updates total.
 	 * 
-	 * @param product the Product object to be added
+	 * @param item the TransactionItem object to be added
 	 */
 	public boolean addItem(TransactionItem item) {
 		items.add(item);
@@ -140,14 +147,6 @@ public class Transaction implements Serializable {
 		return "Transaction [items=" + items + ", date=" + date + ", total="
 				+ total + ", payment=" + payment + ", iterator=" + iterator
 				+ "]";
-	}
-
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	public void setCompleted(boolean completed) {
-		this.completed = completed;
 	}
 
 }

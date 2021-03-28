@@ -32,16 +32,16 @@ public class SafeIterator<T> implements Iterator<Result> {
 	 * This class is designed to ensure that the appropriate object is used to
 	 * copy to the Result object.
 	 * 
-	 * @author Brahma Dathan
+	 * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
 	 *
 	 */
 	public abstract static class Type {
 		/**
-		 * The copy method is used to copy the object to Result. Object is Book
-		 * or Member at present.
+		 * The copy method is used to copy the object to Result. Object is
+		 * Product or Member at present.
 		 * 
 		 * @param result the Result object
-		 * @param object the Book or Member object
+		 * @param object the Product or Member object
 		 */
 		public abstract void copy(Result result, Object object);
 
@@ -63,14 +63,14 @@ public class SafeIterator<T> implements Iterator<Result> {
 	}
 
 	/**
-	 * The user of SafeIterator must supply an Iterator to Book or Member. If
-	 * Iterator<Book> is passed as the first parameter, SafeItearator.BOOK
+	 * The user of SafeIterator must supply an Iterator to Product or Member. If
+	 * Iterator<Product> is passed as the first parameter, SafeItearator.PRODUCT
 	 * should be passed as the second parameter. If Iterator<Member> is passed
 	 * as the first parameter, SafeItearator.MEMBER should be the second
 	 * parameter.
 	 * 
-	 * @param iterator Iterator<Book> or Iterator<Member>
-	 * @param type     SafeItearator.BOOK or SafeItearator.MEMBER
+	 * @param iterator Iterator<Product> or Iterator<Member>
+	 * @param type     SafeItearator.PRODUCT or SafeItearator.MEMBER
 	 */
 	public SafeIterator(Iterator<T> iterator, Type type) {
 		this.iterator = iterator;
