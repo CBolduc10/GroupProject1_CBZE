@@ -3,14 +3,14 @@ package business.facade;
 import java.util.Calendar;
 
 /**
- * This class is used for requesting many of the results of the library system's
+ * This class is used for requesting many of the results of the store system's
  * business logic to user interface. It is a singleton
  * 
  * At present, the Request object returns an int code,plus values of selected
- * fields of Book and Member. They are the book title, id, borrower id, due
- * date, member name, member phone, and member id.
+ * fields of Member, Product, TransactionItem and Order. The applicable fields
+ * are found in DataTransfer.
  * 
- * @author Brahma Dathan
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public class Request extends DataTransfer {

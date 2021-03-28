@@ -1,14 +1,14 @@
 package business.facade;
 
 /**
- * This class is used for returning many of the results of the library system's
+ * This class is used for returning many of the results of the store system's
  * business logic to user interface.
  * 
  * At present, the Result object returns an int code,plus values of selected
- * fields of Book and Member. They are the book title, id, borrower id, due
- * date, member name, member phone, and member id.
+ * fields of Member, Product, TransactionItem and Order. They are the fields
+ * found in DataTransfer.
  * 
- * @author Brahma Dathan
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public class Result extends DataTransfer {

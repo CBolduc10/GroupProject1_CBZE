@@ -8,10 +8,10 @@ import business.facade.Result;
 
 /**
  * This Iterator implementation is tailor-made to supply a "read-only" version
- * of Book objects. The user should supply an iterator to Book as the parameter
- * to the constructor.
+ * of Product objects. The user should supply an iterator to Product as the
+ * parameter to the constructor.
  * 
- * @author Brahma Dathan
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public class SafeProductIterator implements Iterator<Result> {
@@ -19,9 +19,9 @@ public class SafeProductIterator implements Iterator<Result> {
 	private Result result = new Result();
 
 	/**
-	 * The user of SafeIterator must supply an Iterator to Book.
+	 * The user of SafeIterator must supply an Iterator to Product.
 	 * 
-	 * @param iterator Iterator<Book>
+	 * @param iterator Iterator<Product>
 	 */
 	public SafeProductIterator(Iterator<Product> iterator) {
 		this.iterator = iterator;

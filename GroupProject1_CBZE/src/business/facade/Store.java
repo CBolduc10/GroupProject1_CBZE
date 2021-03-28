@@ -2,22 +2,7 @@ package business.facade;
 
 /**
  * 
- * @author Brahma Dathan and Sarnath Ramnath
- * @Copyright (c) 2010
- 
- * Redistribution and use with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   - the use is for academic purpose only
- *   - Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   - Neither the name of Brahma Dathan or Sarnath Ramnath
- *     may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * The authors do not make any claims regarding the correctness of the code in this module
- * and are not responsible for any loss or damage resulting from its use.  
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc 
  */
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,9 +25,6 @@ import business.entities.iterators.SafeProductIterator;
 
 /**
  * The facade class handling all requests from users.
- * 
- * @author Brahma Dathan
- *
  */
 public class Store implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -52,34 +34,18 @@ public class Store implements Serializable {
 	private static Store store;
 
 	/**
-	 * 
-	 * @author Brahma Dathan and Sarnath Ramnath
-	 * @Copyright (c) 2010
-	 * 
-	 *            Redistribution and use with or without modification, are
-	 *            permitted provided that the following conditions are met:
-	 *
-	 *            - the use is for academic purpose only - Redistributions of
-	 *            source code must retain the above copyright notice, this list
-	 *            of conditions and the following disclaimer. - Neither the name
-	 *            of Brahma Dathan or Sarnath Ramnath may be used to endorse or
-	 *            promote products derived from this software without specific
-	 *            prior written permission.
-	 *
-	 *            The authors do not make any claims regarding the correctness
-	 *            of the code in this module and are not responsible for any
-	 *            loss or damage resulting from its use.
+	 * A collection class in Store that stores and handles/processes Order
+	 * objects.
 	 */
-
 	private class OrderList implements Iterable<Order>, Serializable {
 		private static final long serialVersionUID = 1L;
 		private List<Order> orders = new LinkedList<Order>();
 
 		/**
-		 * Checks whether a product with a given book id exists.
+		 * Checks whether an Order with a given Order id exists.
 		 * 
-		 * @param productId the id of the product
-		 * @return true iff the book exists
+		 * @param orderId the id of the order
+		 * @return true iff the order exists
 		 * 
 		 */
 		public Order search(String orderId) {
@@ -94,18 +60,18 @@ public class Store implements Serializable {
 		}
 
 		/**
-		 * Inserts a product into the collection
+		 * Inserts an order into the collection
 		 * 
-		 * @param product the product to be inserted
-		 * @return true iff the product could be inserted. Currently always true
+		 * @param order the order to be inserted
+		 * @return true iff the order could be inserted. Currently always true
 		 */
-		public boolean insertOrder(Order order) {// insertBook
+		public boolean insertOrder(Order order) {
 			orders.add(order);
 			return true;
 		}
 
 		/**
-		 * Returns an iterator to all books
+		 * Returns an iterator to all orders
 		 * 
 		 * @return iterator to the collection
 		 */
@@ -127,9 +93,7 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * The collection class for Product objects
-	 * 
-	 * @author Brahma Dathan and Sarnath Ramnath
+	 * The collection class in Store for Product objects.
 	 *
 	 */
 	private class Catalog implements Iterable<Product>, Serializable {
@@ -137,10 +101,10 @@ public class Store implements Serializable {
 		private List<Product> products = new LinkedList<Product>();
 
 		/**
-		 * Checks whether a product with a given book id exists.
+		 * Checks whether a product with a given product id exists.
 		 * 
 		 * @param productId the id of the product
-		 * @return true iff the book exists
+		 * @return true iff the product exists
 		 * 
 		 */
 		public Product search(String productId) {
@@ -166,7 +130,7 @@ public class Store implements Serializable {
 		}
 
 		/**
-		 * Returns an iterator to all books
+		 * Returns an iterator to all products
 		 * 
 		 * @return iterator to the collection
 		 */
@@ -185,8 +149,6 @@ public class Store implements Serializable {
 
 	/**
 	 * The collection class for Member objects
-	 * 
-	 * @author Brahma Dathan and Sarnath Ramnath
 	 *
 	 */
 	private class MemberList implements Iterable<Member>, Serializable {
@@ -235,6 +197,12 @@ public class Store implements Serializable {
 			return members.toString();
 		}
 
+		/**
+		 * Method to delete a member from the collection.
+		 * 
+		 * @param memberId member ID of member to be removed
+		 * @return removed member
+		 */
 		public boolean remove(String memberId) {
 			Member member = search(memberId);
 			if (member == null) {
@@ -246,7 +214,7 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Private for the singleton pattern Creates the catalog and member
+	 * Private for the singleton pattern Creates the order, catalog, and member
 	 * collection objects
 	 */
 	private Store() {
@@ -268,7 +236,7 @@ public class Store implements Serializable {
 	/**
 	 * Organizes the operations for adding a product
 	 * 
-	 * @param title  product title
+	 * @param name   product name
 	 * @param author product id
 	 * @param id     product reorder level
 	 * @param price  product price
@@ -338,6 +306,13 @@ public class Store implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Method to change the price for a product by searching catalog collection.
+	 * Returns result to UI.
+	 * 
+	 * @param (via request) product id
+	 * @return result
+	 */
 	public Result changePrice(Request request) {
 		Result result = new Result();
 		Product product = catalog.search(request.getProductId());
@@ -355,6 +330,19 @@ public class Store implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Method for a member to purchase products from the store, grouped as a
+	 * transaction. Member enter id and if valid the cashier begins checking out
+	 * products. These transaction items alter the stock of products and trigger
+	 * reordering when applicable. The product name, item quantity, product
+	 * price, price per quantity and transaction total are displayed per entry
+	 * of valid item and amount.
+	 * 
+	 * @param (via request) member id, product id, product reorder level, item
+	 *             quantity.
+	 * @return result code, (order quantity, order id), product fields, item
+	 *         quantity, item total, transaction total.
+	 */
 	public Result purchaseProducts(Request request) {
 		Result result = new Result();
 		Member member = members.search(request.getMemberId());
@@ -417,6 +405,11 @@ public class Store implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Creates a transaction for a specific member.
+	 * 
+	 * @param (via request) member id
+	 */
 	public void createTransaction(Request request) {
 		Member member = members.search(request.getMemberId());
 		member.addTransaction(new Transaction());
@@ -441,11 +434,12 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Returns an iterator to the transactions for a specific member on a
-	 * certain date
+	 * Returns an iterator to the transactions for a specific member between two
+	 * dates
 	 * 
-	 * @param memberId member id
-	 * @param date     date of issue
+	 * @param (via request) memberId member id
+	 * @param (via request) startDate starting date for period
+	 * @param (via request) endDate ending date for period
 	 * @return iterator to the collection
 	 */
 	public Iterator<Transaction> getTransactions(Request request) {
@@ -531,7 +525,7 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * String form of the library
+	 * String form of the store
 	 * 
 	 */
 	@Override
@@ -539,6 +533,13 @@ public class Store implements Serializable {
 		return catalog + "\n" + members;
 	}
 
+	/**
+	 * Handles the processing of a transaction for a specific member by
+	 * calculating total and change owed upon payment.
+	 * 
+	 * @param (via request) member id, payment from customer (transactionChange)
+	 * @return result transactionChange via processing transaction
+	 */
 	public Result getChange(Request request) {
 		Result result = new Result();
 		Member member = members.search(request.getMemberId());

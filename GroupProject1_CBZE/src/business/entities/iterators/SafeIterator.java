@@ -35,16 +35,16 @@ public class SafeIterator<T> implements Iterator<Result> {
 	 * This class is designed to ensure that the appropriate object is used to
 	 * copy to the Result object.
 	 * 
-	 * @author Brahma Dathan
+	 * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
 	 *
 	 */
 	public abstract static class Type {
 		/**
-		 * The copy method is used to copy the object to Result. Object is Book
-		 * or Member at present.
+		 * The copy method is used to copy the object to Result. Object is
+		 * Product or Member at present.
 		 * 
 		 * @param result the Result object
-		 * @param object the Book or Member object
+		 * @param object the Product or Member object
 		 */
 		public abstract void copy(Result result, Object object);
 

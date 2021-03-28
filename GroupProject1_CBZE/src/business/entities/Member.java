@@ -13,9 +13,9 @@ import java.util.List;
 import business.entities.iterators.FilteredIterator;
 
 /**
- * Member represents a member of the library.
+ * Member represents a member (customer) of the store.
  * 
- * @author Brahma Dathan and Sarnath Ramnath
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public class Member implements Serializable {
@@ -31,11 +31,12 @@ public class Member implements Serializable {
 	private static int idCounter;
 
 	/**
-	 * Creates a single member
+	 * Creates a single member, generating id and corresponding date joined.
 	 * 
 	 * @param name    name of the member
 	 * @param address address of the member
 	 * @param phone   phone number of the member
+	 * @param feePaid fee paid by member
 	 */
 	public Member(String name, String address, String phone, double feePaid) {
 		this.name = name;
@@ -46,14 +47,30 @@ public class Member implements Serializable {
 		id = MEMBER_STRING + ++idCounter;
 	}
 
+	/**
+	 * Adds a transaction to the member's collection of transactions.
+	 * 
+	 * @param transaction
+	 * @return true or false
+	 */
 	public boolean addTransaction(Transaction transaction) {
 		return transactions.add(transaction);
 	}
 
+	/**
+	 * Returns the current or last transaction for the member.
+	 * 
+	 * @return transaction object
+	 */
 	public Transaction getCurrentTransaction() {
 		return transactions.get(transactions.size() - 1);
 	}
 
+	/**
+	 * Checks if the member's collection of transactions is empty
+	 * 
+	 * @return true or false
+	 */
 	public boolean isEmpty() {
 		return this.transactions.isEmpty();
 	}
@@ -61,7 +78,10 @@ public class Member implements Serializable {
 	/**
 	 * Gets an iterator to a collection of selected transactions
 	 * 
-	 * @param date the date for which the transactions have to be retrieved
+	 * @param startDate the start date for which the transactions have to be
+	 *                  retrieved
+	 * @param endDate   date the end date for which the transactions have to be
+	 *                  retrieved
 	 * @return the iterator to the collection
 	 */
 	public Iterator<Transaction> getTransactionsBetweenDates(Calendar startDate,
@@ -126,6 +146,11 @@ public class Member implements Serializable {
 				+ this.dateJoined.get(Calendar.YEAR));
 	}
 
+	/**
+	 * Getter for fee paid
+	 * 
+	 * @return fee paid
+	 */
 	public double getFeePaid() {
 		return feePaid;
 	}
@@ -142,7 +167,7 @@ public class Member implements Serializable {
 	/**
 	 * Setter for address
 	 * 
-	 * @param newName member's new address
+	 * @param newAddress member's new address
 	 */
 	public void setAddress(String newAddress) {
 		address = newAddress;
@@ -151,16 +176,26 @@ public class Member implements Serializable {
 	/**
 	 * Setter for phone
 	 * 
-	 * @param newName member's new phone
+	 * @param newPhone member's new phone
 	 */
 	public void setPhone(String newPhone) {
 		phone = newPhone;
 	}
 
+	/**
+	 * Setter for date Joined
+	 * 
+	 * @param dateJoined Calendar object for date joined
+	 */
 	public void setDateJoined(Calendar dateJoined) {
 		this.dateJoined = dateJoined;
 	}
 
+	/**
+	 * Setter for fee paid by member
+	 * 
+	 * @param feePaid fee paid
+	 */
 	public void setFeePaid(double feePaid) {
 		this.feePaid = feePaid;
 	}
