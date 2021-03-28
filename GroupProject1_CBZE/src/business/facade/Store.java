@@ -19,7 +19,9 @@ import business.entities.Order;
 import business.entities.Product;
 import business.entities.Transaction;
 import business.entities.TransactionItem;
-import business.entities.iterators.SafeIterator;
+import business.entities.iterators.SafeMemberIterator;
+import business.entities.iterators.SafeOrderIterator;
+import business.entities.iterators.SafeProductIterator;
 
 /**
  * The facade class handling all requests from users.
@@ -75,6 +77,10 @@ public class Store implements Serializable {
 		 */
 		public Iterator<Order> iterator() {
 			return orders.iterator();
+		}
+
+		public boolean remove(Order order) {
+			return orders.remove(order);
 		}
 
 		/**
@@ -240,11 +246,15 @@ public class Store implements Serializable {
 		Result result = new Result();
 		Product product = new Product(request.getProductName(),
 				request.getProductId(),
+				Integer.parseInt(request.getProductStock()),
 				Integer.parseInt(request.getProductReorderLevel()),
 				Double.parseDouble(request.getProductPrice()));
 		if (catalog.insertProduct(product)) {
 			result.setResultCode(Result.OPERATION_COMPLETED);
 			result.setProductFields(product);
+			Order order = new Order(product.getId(), product.getName(),
+					product.getReorderLevel() * 2);
+			orders.insertOrder(order);
 			return result;
 		}
 		result.setResultCode(Result.OPERATION_FAILED);
@@ -354,12 +364,17 @@ public class Store implements Serializable {
 			result.setResultCode(Result.OPERATION_FAILED);
 		} else {
 			result.setProductFields(product);
-			transaction.addItem(item);
 			if (product.checkReorder()) {
-				Order order = new Order(product.getId(),
+				System.out.println("The current quantity of "
+						+ product.getName() + " is low");
+				System.out.println("A new order for " + product.getName()
+						+ " has been placed");
+				Order order = new Order(product.getId(), product.getName(),
 						product.getReorderLevel() * 2);
 				result.setOrderQuantity(String.valueOf(order.getQuantity()));
 				result.setOrderId(order.getId());
+				System.out.println("Amount ordered: " + order.getQuantity());
+				System.out.println("Order ID: " + order.getId());
 			}
 			product.setStock(product.getStock()
 					- Integer.parseInt(request.getItemQuantity()));
@@ -367,6 +382,25 @@ public class Store implements Serializable {
 			result.setItemQuantity(String.valueOf(item.getQuantity()));
 			result.setItemTotal(String.valueOf(item.getTotal()));
 			result.setTransactionTotal(String.valueOf(transaction.getTotal()));
+		}
+		return result;
+	}
+
+	public Result processShipments(Request request) {
+		Result result = new Result();
+		Order order = orders.search(request.getOrderId());
+		if (order == null) {
+			result.setResultCode(Result.NO_ORDER_FOUND);
+		} else {
+			Product product = catalog.search(order.getProductId());
+			int quantity = order.getQuantity();
+			product.setStock(product.getStock() + quantity);
+			if (!orders.remove(order)) {
+				result.setResultCode(Result.OPERATION_FAILED);
+				return result;
+			}
+			result.setProductFields(product);
+			result.setResultCode(Result.OPERATION_COMPLETED);
 		}
 		return result;
 	}
@@ -465,8 +499,7 @@ public class Store implements Serializable {
 	 * @return an Iterator to Result - only the Member fields are valid.
 	 */
 	public Iterator<Result> getMembers() {
-		return new SafeIterator<Member>(members.iterator(),
-				SafeIterator.MEMBER);
+		return new SafeMemberIterator(members.iterator());
 	}
 
 	/**
@@ -477,8 +510,18 @@ public class Store implements Serializable {
 	 * @return an Iterator to Result - only the Product fields are valid.
 	 */
 	public Iterator<Result> getProducts() {
-		return new SafeIterator<Product>(catalog.iterator(),
-				SafeIterator.PRODUCT);
+		return new SafeProductIterator(catalog.iterator());
+	}
+
+	/**
+	 * Returns an iterator to Order info. The Iterator returned is a safe one,
+	 * in the sense that only copies of the Order fields are assembled into the
+	 * objects returned via next().
+	 * 
+	 * @return an Iterator to Result - only the Product fields are valid.
+	 */
+	public Iterator<Result> getOrders() {
+		return new SafeOrderIterator(orders.iterator());
 	}
 
 	/**

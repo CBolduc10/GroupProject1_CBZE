@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Order represents the order of a product for the store.
@@ -17,7 +19,9 @@ public class Order implements Serializable {
 	private static int idCounter;
 	private String id;
 	private String productId;
+	private String productName;
 	private int quantity;
+	private Calendar date;
 
 	/**
 	 * Creates a single order, generating a unique order id.
@@ -25,10 +29,12 @@ public class Order implements Serializable {
 	 * @param productId product id of product to be ordered.
 	 * @param quantity  quantity of product to be ordered.
 	 */
-	public Order(String productId, int quantity) {
+ public Order(String productId, String productName, int quantity) {
 		this.id = ORDER_STRING + ++idCounter;
 		this.productId = productId;
+		this.productName = productName;
 		this.quantity = quantity;
+		this.date = new GregorianCalendar();
 	}
 
 	/**
@@ -74,6 +80,25 @@ public class Order implements Serializable {
 	 */
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	/**
+	 * Returns the date as a String
+	 * 
+	 * @return date with month, date, and year
+	 */
+	public String getDate() {
+		return ((this.date.get(Calendar.MONTH) + 1) + "/"
+				+ this.date.get(Calendar.DATE) + "/"
+				+ this.date.get(Calendar.YEAR));
 	}
 
 	@Override
@@ -124,7 +149,7 @@ public class Order implements Serializable {
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", productId=" + productId + ", quantity="
-				+ quantity + "]";
+				+ quantity + ", date =" + getDate() + "]";
 	}
 
 	public static void save(ObjectOutputStream output) throws IOException {

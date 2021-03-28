@@ -249,7 +249,7 @@ public class UserInterface {
 	 */
 	public void removeMember() {
 		do {
-			Request.instance().setMemberId(getToken("Enter book id"));
+			Request.instance().setMemberId(getToken("Enter member id"));
 			Result result = store.removeMember(Request.instance());
 			switch (result.getResultCode()) {
 			case Result.NO_SUCH_MEMBER:
@@ -281,6 +281,7 @@ public class UserInterface {
 		do {
 			Request.instance().setProductName(getName("Enter name"));
 			Request.instance().setProductId(getToken("Enter id"));
+			Request.instance().setProductStock(getToken("Enter stock at hand"));
 			Request.instance().setProductPrice(getName("Enter price"));
 			Request.instance()
 					.setProductReorderLevel(getName("Enter reorder level"));
@@ -343,11 +344,28 @@ public class UserInterface {
 	/**
 	 * Method to be called for processing shipments. Prompts the user for the
 	 * appropriate values and uses the appropriate Store method for processing
-	 * orders after receiving shipments.
+	 * shipments.
 	 * 
 	 */
 	public void processShipments() {
-
+		do {
+			Request.instance().setOrderId(getToken("Enter order number"));
+			Result result = store.processShipments(Request.instance());
+			if (result.getResultCode() == Result.NO_ORDER_FOUND) {
+				System.out.println(
+						"Order not found. Shipment could not be processed");
+			} else if (result.getResultCode() == Result.OPERATION_COMPLETED) {
+				System.out.println("Shipment processed");
+				System.out.println(
+						result.getProductId() + " " + result.getProductName()
+								+ " " + result.getProductStock());
+			} else {
+				System.out.println("Shipment could not be processed");
+			}
+			if (!yesOrNo("Process more shipments?")) {
+				break;
+			}
+		} while (true);
 	}
 
 	/**
@@ -446,18 +464,24 @@ public class UserInterface {
 				"Please enter the beginning date of the period for which you want records as mm/dd/yy"));
 		Request.instance().setEndDate(getDate(
 				"Please enter the end date of the period for which you want records as mm/dd/yy"));
-		Iterator<Transaction> result = store
-				.getTransactions(Request.instance());
-		while (result.hasNext()) {
-			Transaction transaction = (Transaction) result.next();
-			System.out.println(transaction.getDate());
-			for (TransactionItem ti : transaction.getItems()) {
-				System.out.println(ti.getName() + " " + ti.getPrice() + " "
-						+ ti.getQuantity() + " " + ti.getTotal());
+		if (Request.instance().getStartDate()
+				.compareTo(Request.instance().getEndDate()) > 0) {
+			System.out.println("The second date must be after the first date");
+		} else {
+			Iterator<Transaction> result = store
+					.getTransactions(Request.instance());
+			while (result.hasNext()) {
+				Transaction transaction = (Transaction) result.next();
+				System.out.println(transaction.getDate());
+				for (TransactionItem ti : transaction.getItems()) {
+					System.out.println(ti.getName() + " $" + ti.getPrice() + " "
+							+ ti.getQuantity() + " $" + ti.getTotal());
+				}
+				System.out.println(
+						"Total cost: $" + transaction.getTotal() + "\n");
 			}
-			System.out.println(transaction.getTotal() + "\n");
+			System.out.println("\n End of transactions \n");
 		}
-		System.out.println("\n End of transactions \n");
 	}
 
 	/**
@@ -482,15 +506,13 @@ public class UserInterface {
 	 * Displays all outstanding orders by iterating through OrderList.
 	 */
 	public void getOrders() {
-		Iterator<Result> iterator = store.getMembers();
-		System.out.println("List of orders (*)");// *FIELDS GO HERE*
+		Iterator<Result> iterator = store.getOrders();
+		System.out.println("List of orders (*)");
 		while (iterator.hasNext()) {
 			Result result = iterator.next();
-			System.out.println(result.getMemberName() + " "
-					+ result.getMemberAddress() + " " + result.getMemberPhone()//
-					+ " " + result.getMemberId() + " "
-					+ result.getMemberDateJoined() + " "
-					+ result.getMemberFeePaid());//
+			System.out.println(result.getOrderId() + " "
+					+ result.getOrderProductName() + " " + result.getOrderDate()
+					+ " " + result.getOrderQuantity());
 		}
 		System.out.println("End of listing");
 	}

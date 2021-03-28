@@ -25,10 +25,11 @@ public class Product implements Serializable {
 	 * @param reorderLevel Reorder Level for the product
 	 * @param price        Price of the Product
 	 */
-	public Product(String name, String id, int reorderLevel, double price) {
+	public Product(String name, String id, int stock, int reorderLevel,
+			double price) {
 		this.name = name;
 		this.id = id;
-		this.stock = 0;
+		this.stock = stock;
 		this.reorderLevel = reorderLevel;
 		this.price = price;
 	}
@@ -117,11 +118,9 @@ public class Product implements Serializable {
 	 * @return true or false if updated successfully
 	 */
 	public boolean setStock(int stock) {
-		if (this.stock - stock >= 0) {
-			this.stock = stock;
-			return true;
-		}
-		return false;
+		// if (this.stock - stock >= 0) {
+		this.stock = stock;
+		return true;
 	}
 
 	/**
