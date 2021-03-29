@@ -11,7 +11,7 @@ import business.facade.Result;
  * of Order objects. The user should supply an iterator to Order as the
  * parameter to the constructor.
  * 
- * @author Brahma Dathan
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduct
  *
  */
 public class SafeOrderIterator implements Iterator<Result> {
@@ -19,9 +19,9 @@ public class SafeOrderIterator implements Iterator<Result> {
 	private Result result = new Result();
 
 	/**
-	 * The user of SafeIterator must supply an Iterator to Book.
+	 * The user of SafeIterator must supply an Iterator to Order.
 	 * 
-	 * @param iterator Iterator<Book>
+	 * @param iterator Iterator<Order>
 	 */
 	public SafeOrderIterator(Iterator<Order> iterator) {
 		this.iterator = iterator;

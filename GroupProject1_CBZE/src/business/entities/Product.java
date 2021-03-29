@@ -117,10 +117,22 @@ public class Product implements Serializable {
 	 * @param stock
 	 * @return true or false if updated successfully
 	 */
-	public boolean setStock(int stock) {
-		// if (this.stock - stock >= 0) {
+	public void setStock(int stock) {
 		this.stock = stock;
-		return true;
+	}
+
+	/**
+	 * Checks the availability of product's stock (ensures stock cannot be less
+	 * than 0).
+	 * 
+	 * @param stock
+	 * @return true or false if updated successfully
+	 */
+	public boolean checkStock(int quantity) {
+		if (this.stock - quantity >= 0) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

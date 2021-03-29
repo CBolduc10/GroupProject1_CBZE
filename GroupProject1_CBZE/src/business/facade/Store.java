@@ -119,6 +119,24 @@ public class Store implements Serializable {
 		}
 
 		/**
+		 * Checks whether a product with a given name exists.
+		 * 
+		 * @param name the name of the product
+		 * @return true iff the product exists
+		 * 
+		 */
+		public boolean searchNames(String name) {
+			for (Iterator<Product> iterator = products.iterator(); iterator
+					.hasNext();) {
+				Product product = (Product) iterator.next();
+				if (product.getName().equals(name)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/**
 		 * Inserts a product into the collection
 		 * 
 		 * @param product the product to be inserted
@@ -234,34 +252,6 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Organizes the operations for adding a product
-	 * 
-	 * @param name   product name
-	 * @param author product id
-	 * @param id     product reorder level
-	 * @param price  product price
-	 * @return the Product object created
-	 */
-	public Result addProduct(Request request) {
-		Result result = new Result();
-		Product product = new Product(request.getProductName(),
-				request.getProductId(),
-				Integer.parseInt(request.getProductStock()),
-				Integer.parseInt(request.getProductReorderLevel()),
-				Double.parseDouble(request.getProductPrice()));
-		if (catalog.insertProduct(product)) {
-			result.setResultCode(Result.OPERATION_COMPLETED);
-			result.setProductFields(product);
-			Order order = new Order(product.getId(), product.getName(),
-					product.getReorderLevel() * 2);
-			orders.insertOrder(order);
-			return result;
-		}
-		result.setResultCode(Result.OPERATION_FAILED);
-		return result;
-	}
-
-	/**
 	 * Organizes the operations for adding a member
 	 * 
 	 * @param name    member name
@@ -307,6 +297,180 @@ public class Store implements Serializable {
 	}
 
 	/**
+	 * Organizes the operations for adding a product
+	 * 
+	 * @param name   product name
+	 * @param author product id
+	 * @param id     product reorder level
+	 * @param price  product price
+	 * @return the Product object created and an order for twice the reorder
+	 *         level of the product
+	 */
+	public Result addProduct(Request request) {
+		Result result = new Result();
+		Product product = new Product(request.getProductName(),
+				request.getProductId(),
+				Integer.parseInt(request.getProductStock()),
+				Integer.parseInt(request.getProductReorderLevel()),
+				Double.parseDouble(request.getProductPrice()));
+		if (catalog.searchNames(request.getProductName())) {
+			result.setResultCode(Result.DUPLICATE_ID);
+			return result;
+		}
+		if (catalog.insertProduct(product)) {
+			result.setResultCode(Result.OPERATION_COMPLETED);
+			result.setProductFields(product);
+			Order order = new Order(product.getId(), product.getName(),
+					product.getReorderLevel() * 2);
+			orders.insertOrder(order);
+			return result;
+		}
+		result.setResultCode(Result.OPERATION_FAILED);
+		return result;
+	}
+
+	/**
+	 * Method for a member to purchase products from the store, grouped as a
+	 * transaction. Member enter id and if valid the cashier begins checking out
+	 * products. These transaction items alter the stock of products and trigger
+	 * reordering when applicable. The product name, item quantity, product
+	 * price, price per quantity and transaction total are displayed per entry
+	 * of valid item and amount.
+	 * 
+	 * @param (via request) member id, product id, product reorder level, item
+	 *             quantity.
+	 * @return result code, (order quantity, order id), product fields, item
+	 *         quantity, item total, transaction total.
+	 */
+	public Result purchaseProducts(Request request) {
+		Result result = new Result();
+		Member member = members.search(request.getMemberId());
+		result.setMemberFields(member);
+		Product product = catalog.search(request.getProductId());
+		result.setProductFields(product);
+		int quantity = Integer.parseInt(request.getItemQuantity());
+		Transaction transaction = member.getCurrentTransaction();
+		if (product.checkStock(quantity) == false) {
+			result.setResultCode(Result.OPERATION_FAILED);
+			return result;
+		} else {
+			TransactionItem item = new TransactionItem(product, quantity);
+			transaction.addItem(item);
+			product.setStock(product.getStock() - item.getQuantity());
+			if (product.checkReorder()) {
+				Order order = new Order(product.getId(), product.getName(),
+						product.getReorderLevel() * 2);
+				if (!orders.search(order.getId()).equals(order)) {
+					orders.insertOrder(order);
+					result.setOrderQuantity(
+							String.valueOf(order.getQuantity()));
+					result.setOrderId(order.getId());
+				}
+			}
+			result.setResultCode(Result.OPERATION_COMPLETED);
+			result.setItemQuantity(String.valueOf(item.getQuantity()));
+			result.setItemTotal(String.valueOf(item.getTotal()));
+			result.setTransactionTotal(String.valueOf(transaction.getTotal()));
+			return result;
+		}
+	}
+
+	/**
+	 * Checks if a member's current transaction is empty and if so, removes the
+	 * transaction.
+	 * 
+	 * @param (via request) memberId id of member
+	 * @return result
+	 */
+	public Result checkTransaction(Request request) {
+		Result result = new Result();
+		Member member = members.search(request.getMemberId());
+		if (member.getCurrentTransaction().isEmpty()) {
+			member.removeCurrentTransaction();
+			result.setResultCode(Result.TRANSACTION_EMPTY);
+			return result;
+		}
+		result.setResultCode(Result.OPERATION_COMPLETED);
+		result.setTransactionTotal(
+				String.valueOf(member.getCurrentTransaction().getTotal()));
+		return result;
+	}
+
+	/**
+	 * Creates a transaction for a specific member.
+	 * 
+	 * @param (via request) member id
+	 */
+	public void createTransaction(Request request) {
+		Member member = members.search(request.getMemberId());
+		member.addTransaction(new Transaction());
+	}
+
+	/**
+	 * Deletes a transaction for a specific member.
+	 * 
+	 * @param (via request) member id
+	 */
+	public void deleteTransaction(Request request) {
+		Member member = members.search(request.getMemberId());
+		member.removeCurrentTransaction();
+	}
+
+	/**
+	 * Handles the processing of a transaction for a specific member by
+	 * calculating total and change owed upon payment.
+	 * 
+	 * @param (via request) member id, payment from customer (transactionChange)
+	 * @return result transactionChange via processing transaction
+	 */
+	public Result getChange(Request request) {
+		Result result = new Result();
+		Member member = members.search(request.getMemberId());
+		if (member == null) {
+			result.setResultCode(Result.NO_SUCH_MEMBER);
+			return result;
+		}
+		Transaction transaction = member.getCurrentTransaction();
+		transaction
+				.setPayment(Double.parseDouble(request.getTransactionChange()));
+		if (transaction.processTransaction()) {
+			result.setTransactionChange(String.valueOf(Math
+					.abs(transaction.getPayment() - transaction.getTotal())));
+			result.setResultCode(Result.TRANSACTION_COMPLETE);
+			return result;
+		} else {
+			result.setResultCode(Result.INSUFFICIENT_FUNDS);
+			return result;
+		}
+	}
+
+	/**
+	 * Processes shipments and by fulfilling orders and updating the applicable
+	 * product stocks.
+	 * 
+	 * @param (via request) order id
+	 * @return result
+	 */
+	public Result processShipments(Request request) {
+		Result result = new Result();
+		Order order = orders.search(request.getOrderId());
+		if (order == null) {
+			result.setResultCode(Result.NO_ORDER_FOUND);
+		} else {
+			Product product = catalog.search(order.getProductId());
+			int quantity = order.getQuantity();
+			product.setStock(product.getStock() + quantity);
+			if (!orders.remove(order)) {
+				result.setResultCode(Result.OPERATION_FAILED);
+				return result;
+			}
+			result.setProductFields(product);
+			result.setResultCode(Result.OPERATION_COMPLETED);
+		}
+		return result;
+	}
+
+	/**
 	 * Method to change the price for a product by searching catalog collection.
 	 * Returns result to UI.
 	 * 
@@ -331,91 +495,6 @@ public class Store implements Serializable {
 	}
 
 	/**
-	 * Method for a member to purchase products from the store, grouped as a
-	 * transaction. Member enter id and if valid the cashier begins checking out
-	 * products. These transaction items alter the stock of products and trigger
-	 * reordering when applicable. The product name, item quantity, product
-	 * price, price per quantity and transaction total are displayed per entry
-	 * of valid item and amount.
-	 * 
-	 * @param (via request) member id, product id, product reorder level, item
-	 *             quantity.
-	 * @return result code, (order quantity, order id), product fields, item
-	 *         quantity, item total, transaction total.
-	 */
-	public Result purchaseProducts(Request request) {
-		Result result = new Result();
-		Member member = members.search(request.getMemberId());
-		if (member == null) {
-			result.setResultCode(Result.NO_SUCH_MEMBER);
-			return result;
-		}
-		result.setMemberFields(member);
-		Product product = catalog.search(request.getProductId());
-		if (product == null) {
-			result.setResultCode(Result.NO_SUCH_PRODUCT);
-			return result;
-		}
-		Transaction transaction = member.getCurrentTransaction();
-		TransactionItem item = new TransactionItem(product,
-				Integer.parseInt(request.getItemQuantity()));
-		if (!transaction.addItem(item) || product.setStock(product.getStock()
-				- Integer.parseInt(request.getItemQuantity())) == false) {
-			result.setResultCode(Result.OPERATION_FAILED);
-		} else {
-			result.setProductFields(product);
-			if (product.checkReorder()) {
-				System.out.println("The current quantity of "
-						+ product.getName() + " is low");
-				System.out.println("A new order for " + product.getName()
-						+ " has been placed");
-				Order order = new Order(product.getId(), product.getName(),
-						product.getReorderLevel() * 2);
-				result.setOrderQuantity(String.valueOf(order.getQuantity()));
-				result.setOrderId(order.getId());
-				System.out.println("Amount ordered: " + order.getQuantity());
-				System.out.println("Order ID: " + order.getId());
-			}
-			product.setStock(product.getStock()
-					- Integer.parseInt(request.getItemQuantity()));
-			result.setResultCode(Result.OPERATION_COMPLETED);
-			result.setItemQuantity(String.valueOf(item.getQuantity()));
-			result.setItemTotal(String.valueOf(item.getTotal()));
-			result.setTransactionTotal(String.valueOf(transaction.getTotal()));
-		}
-		return result;
-	}
-
-	public Result processShipments(Request request) {
-		Result result = new Result();
-		Order order = orders.search(request.getOrderId());
-		if (order == null) {
-			result.setResultCode(Result.NO_ORDER_FOUND);
-		} else {
-			Product product = catalog.search(order.getProductId());
-			int quantity = order.getQuantity();
-			product.setStock(product.getStock() + quantity);
-			if (!orders.remove(order)) {
-				result.setResultCode(Result.OPERATION_FAILED);
-				return result;
-			}
-			result.setProductFields(product);
-			result.setResultCode(Result.OPERATION_COMPLETED);
-		}
-		return result;
-	}
-
-	/**
-	 * Creates a transaction for a specific member.
-	 * 
-	 * @param (via request) member id
-	 */
-	public void createTransaction(Request request) {
-		Member member = members.search(request.getMemberId());
-		member.addTransaction(new Transaction());
-	}
-
-	/**
 	 * Searches for a given member
 	 * 
 	 * @param memberId id of the member
@@ -429,6 +508,24 @@ public class Store implements Serializable {
 		} else {
 			result.setResultCode(Result.OPERATION_COMPLETED);
 			result.setMemberFields(member);
+		}
+		return result;
+	}
+
+	/**
+	 * Searches for a given product
+	 * 
+	 * @param productId id of the product
+	 * @return true iff the product is in the catalog collection
+	 */
+	public Result searchCatalog(Request request) {
+		Result result = new Result();
+		Product product = catalog.search(request.getProductId());
+		if (product == null) {
+			result.setResultCode(Result.NO_SUCH_PRODUCT);
+		} else {
+			result.setResultCode(Result.OPERATION_COMPLETED);
+			result.setProductFields(product);
 		}
 		return result;
 	}
@@ -531,28 +628,5 @@ public class Store implements Serializable {
 	@Override
 	public String toString() {
 		return catalog + "\n" + members;
-	}
-
-	/**
-	 * Handles the processing of a transaction for a specific member by
-	 * calculating total and change owed upon payment.
-	 * 
-	 * @param (via request) member id, payment from customer (transactionChange)
-	 * @return result transactionChange via processing transaction
-	 */
-	public Result getChange(Request request) {
-		Result result = new Result();
-		Member member = members.search(request.getMemberId());
-		if (member == null) {
-			result.setResultCode(Result.NO_SUCH_MEMBER);
-			return result;
-		}
-		Transaction transaction = member.getCurrentTransaction();
-		transaction
-				.setPayment(Double.parseDouble(request.getTransactionChange()));
-		result.setTransactionChange(
-				String.valueOf(transaction.processTransaction()));
-
-		return result;
 	}
 }

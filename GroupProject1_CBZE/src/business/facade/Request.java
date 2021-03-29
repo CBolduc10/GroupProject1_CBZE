@@ -15,9 +15,9 @@ import java.util.Calendar;
  */
 public class Request extends DataTransfer {
 	private static Request request;
-	private int holdDuration;
 	private Calendar startDate;
 	private Calendar endDate;
+	private int itemQuantity;
 
 	/**
 	 * This is a singleton class. Hence the private constructor.
@@ -36,14 +36,6 @@ public class Request extends DataTransfer {
 			request = new Request();
 		}
 		return request;
-	}
-
-	public int getHoldDuration() {
-		return holdDuration;
-	}
-
-	public void setHoldDuration(int holdDuration) {
-		this.holdDuration = holdDuration;
 	}
 
 	public Calendar getStartDate() {

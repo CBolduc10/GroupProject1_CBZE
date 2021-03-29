@@ -67,6 +67,13 @@ public class Member implements Serializable {
 	}
 
 	/**
+	 * Removes the current/last transaction.
+	 */
+	public void removeCurrentTransaction() {
+		transactions.remove(getCurrentTransaction());
+	}
+
+	/**
 	 * Checks if the member's collection of transactions is empty
 	 * 
 	 * @return true or false

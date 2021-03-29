@@ -16,7 +16,7 @@ import java.util.GregorianCalendar;
 public class Order implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String ORDER_STRING = "O";
-	private static int idCounter;
+	private static int orderCounter;
 	private String id;
 	private String productId;
 	private String productName;
@@ -29,8 +29,8 @@ public class Order implements Serializable {
 	 * @param productId product id of product to be ordered.
 	 * @param quantity  quantity of product to be ordered.
 	 */
- public Order(String productId, String productName, int quantity) {
-		this.id = ORDER_STRING + ++idCounter;
+	public Order(String productId, String productName, int quantity) {
+		this.id = ORDER_STRING + ++orderCounter;
 		this.productId = productId;
 		this.productName = productName;
 		this.quantity = quantity;
@@ -153,12 +153,12 @@ public class Order implements Serializable {
 	}
 
 	public static void save(ObjectOutputStream output) throws IOException {
-		output.writeObject(idCounter);
+		output.writeObject(orderCounter);
 	}
 
 	public static void retrieve(ObjectInputStream input)
 			throws IOException, ClassNotFoundException {
-		idCounter = (int) input.readObject();
+		orderCounter = (int) input.readObject();
 	}
 
 }
