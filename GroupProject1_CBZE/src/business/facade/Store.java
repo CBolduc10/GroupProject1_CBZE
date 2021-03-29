@@ -407,10 +407,23 @@ public class Store implements Serializable {
 	 * Creates a transaction for a specific member.
 	 * 
 	 * @param (via request) member id
+	 * @return result
 	 */
-	public void createTransaction(Request request) {
+	public Result createTransaction(Request request) {
+		Result result = new Result();
 		Member member = members.search(request.getMemberId());
-		member.addTransaction(new Transaction());
+		if (member == null) {
+			result.setResultCode(Result.NO_SUCH_MEMBER);
+			return result;
+		}
+		result.setMemberFields(member);
+		if (member.addTransaction(new Transaction())) {
+			result.setResultCode(Result.OPERATION_COMPLETED);
+			return result;
+		}
+		result.setResultCode(Result.OPERATION_FAILED);
+		return result;
+
 	}
 
 	/**

@@ -323,13 +323,16 @@ public class UserInterface {
 	 */
 	public void checkOutProducts() {
 		Request.instance().setMemberId(getToken("Enter member id"));
-		Result result = store.searchMembership(Request.instance());
-		if (result.getResultCode() != Result.OPERATION_COMPLETED) {
+		Result result = store.createTransaction(Request.instance());
+		if (result.getResultCode() == Result.NO_SUCH_MEMBER) {
 			System.out.println(
 					"No member with id " + Request.instance().getMemberId());
 			return;
 		}
-		store.createTransaction(Request.instance());
+		if (result.getResultCode() == Result.OPERATION_FAILED) {
+			System.out.println("Cannot create transaction");
+			return;
+		}
 		do {
 			Request.instance().setProductId(getToken("Enter product id"));
 			result = store.searchCatalog(Request.instance());
