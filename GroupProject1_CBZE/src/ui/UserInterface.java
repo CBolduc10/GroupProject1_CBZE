@@ -553,14 +553,14 @@ public class UserInterface {
 	 */
 	public void getProducts() {
 		Iterator<Result> iterator = store.getProducts();
-		System.out.println("List of products (name, id, reorder level, price)");
+		System.out.println("List of products (name, id, stock in hand, price, reorder level)");
 		while (iterator.hasNext()) {
 			Result result = iterator.next();
 			System.out.println(
 					result.getProductName() + " " + result.getProductId() + " "
-							+ result.getProductReorderLevel() + " "
+							+ result.getProductStock() + " "
 							+ result.getProductPrice() + " "
-							+ result.getProductStock());
+							+ result.getProductReorderLevel());
 		}
 		System.out.println("End of listing");
 	}

@@ -23,6 +23,7 @@ public class AutomatedTester {
 	private String[] productReorderLevel = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "5" };
 	private String[] productId = { "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12", "P13", "P14", "P15", "P16", "P17", "P18", "P19", "P20", "P21" };
 	private Product[] products = new Product[21];
+	private String[] shipmentRecieve = { "O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8", "O9", "O10", "O11", "O12", "O13", "O14", "O15", "O16", "O17", "O18" };
 	
 	/**
 	 * Tests Member Creation
@@ -70,10 +71,43 @@ public class AutomatedTester {
 		System.out.println("Member " + result.getMemberId() + " removed.");
 	}
 	
+	/**
+	 * Test's processing shipments. Will process 18 of the shipments generated.
+	 */
+	public void testProcessShipment() {
+		for (int count = 0; count < shipmentRecieve.length; count++) {
+			Request.instance().setOrderId(shipmentRecieve[count]);
+			Result result = Store.instance().processShipments(Request.instance());
+			//System.out.println(result.getProductId() + "  "  + result.getProductName() + "  " + result.getProductStock());
+			assert result.getProductId() == productId[count];
+			assert result.getProductName() == productName[count];
+		}
+		
+	}
+	
+	/**
+	 * Test's checking out a member's items.
+	 */
+	public void testCheckOut() {
+		
+	}
+	
+	/**
+	 * Test change product price
+	 */
+	public void testChangePrice() {
+		Request.instance().setProductId("P21");
+		Request.instance().setProductPrice("52.50");
+		Result result = Store.instance().changePrice(Request.instance());
+		assert result.getResultCode() == Result.OPERATION_COMPLETED;
+	}
+	
 	public void testAll() {
 		testAddMember();
 		testAddProduct();
 		testRemoveMember();
+		testProcessShipment();
+		testChangePrice();
 	}
 	/*
 	public static void main(String[] args) {
