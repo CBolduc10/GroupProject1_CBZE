@@ -60,7 +60,8 @@ public class UserInterface {
 			retrieve();
 		} else {
 			store = Store.instance();
-			if (yesOrNo("Do you want to generate a test bed and invoke the functionality using asserts?")) {
+			if (yesOrNo(
+					"Do you want to generate a test bed and invoke the functionality using asserts?")) {
 				AutomatedTester auto = new AutomatedTester();
 				auto.testAll();
 			}
@@ -150,6 +151,25 @@ public class UserInterface {
 				String item = getToken(prompt);
 				Integer number = Integer.valueOf(item);
 				return number.intValue();
+			} catch (NumberFormatException nfe) {
+				System.out.println("Please input a number ");
+			}
+		} while (true);
+	}
+
+	/**
+	 * Converts the string to a double
+	 * 
+	 * @param prompt the string for prompting
+	 * @return the double corresponding to the string
+	 * 
+	 */
+	public double getDouble(String prompt) {
+		do {
+			try {
+				String item = getToken(prompt);
+				Double number = Double.valueOf(item);
+				return number.doubleValue();
 			} catch (NumberFormatException nfe) {
 				System.out.println("Please input a number ");
 			}
@@ -248,31 +268,26 @@ public class UserInterface {
 	/**
 	 * Method to be called for removing Members. Prompts the user for the
 	 * appropriate value for Id and uses the appropriate Store method for
-	 * removing members.
+	 * removing member.
 	 * 
 	 */
 	public void removeMember() {
-		do {
-			Request.instance().setMemberId(getToken("Enter member id"));
-			Result result = store.removeMember(Request.instance());
-			switch (result.getResultCode()) {
-			case Result.NO_SUCH_MEMBER:
-				System.out.println("No such Member with id "
-						+ Request.instance().getMemberId() + " in Store");
-				break;
-			case Result.OPERATION_FAILED:
-				System.out.println("Member could not be removed");
-				break;
-			case Result.OPERATION_COMPLETED:
-				System.out.println(" Member has been removed");
-				break;
-			default:
-				System.out.println("An error has occurred");
-			}
-			if (!yesOrNo("Remove more members?")) {
-				break;
-			}
-		} while (true);
+		Request.instance().setMemberId(getToken("Enter member id"));
+		Result result = store.removeMember(Request.instance());
+		switch (result.getResultCode()) {
+		case Result.NO_SUCH_MEMBER:
+			System.out.println("No such Member with id "
+					+ Request.instance().getMemberId() + " in Store");
+			break;
+		case Result.OPERATION_FAILED:
+			System.out.println("Member could not be removed");
+			break;
+		case Result.OPERATION_COMPLETED:
+			System.out.println(" Member has been removed");
+			break;
+		default:
+			System.out.println("An error has occurred");
+		}
 	}
 
 	/**
@@ -282,21 +297,22 @@ public class UserInterface {
 	 * 
 	 */
 	public void addProducts() {
-		do {
-			Request.instance().setProductName(getName("Enter name"));
-			Request.instance().setProductId(getToken("Enter id"));
-			Request.instance().setProductStock(getToken("Enter stock at hand"));
-			Request.instance().setProductPrice(getName("Enter price"));
-			Request.instance()
-					.setProductReorderLevel(getName("Enter reorder level"));
-			Result result = store.addProduct(Request.instance());
-			if (result.getResultCode() != Result.OPERATION_COMPLETED) {
-				System.out.println("Product could not be added");
-			} else {
-				System.out.println(
-						"Product " + result.getProductName() + " added");
-			}
-		} while (yesOrNo("Add more products?"));
+		Request.instance().setProductName(getName("Enter name"));
+		Request.instance().setProductId(getToken("Enter id"));
+		Request.instance().setProductStock(
+				String.valueOf(getNumber("Enter stock at hand")));
+		Request.instance()
+				.setProductPrice(String.valueOf(getDouble("Enter price")));
+		Request.instance().setProductReorderLevel(
+				String.valueOf(getNumber("Enter reorder level")));
+		Result result = store.addProduct(Request.instance());
+		if (result.getResultCode() == Result.OPERATION_COMPLETED) {
+			System.out.println("Product " + result.getProductName() + " added");
+		} else if (result.getResultCode() == Result.DUPLICATE_ID) {
+			System.out.println("Product id already exists in the system");
+		} else {
+			System.out.println("Product could not be added");
+		}
 	}
 
 	/**
@@ -316,33 +332,48 @@ public class UserInterface {
 		store.createTransaction(Request.instance());
 		do {
 			Request.instance().setProductId(getToken("Enter product id"));
-			Request.instance()
-					.setItemQuantity(getName("Enter product quantity"));
-			result = store.purchaseProducts(Request.instance());
+			result = store.searchCatalog(Request.instance());
 			if (result.getResultCode() == Result.NO_SUCH_PRODUCT) {
 				System.out.println("Product not found");
-			}
-			if (result.getResultCode() == Result.OPERATION_COMPLETED) {
-				System.out.println(
-						result.getProductName() + " " + result.getItemQuantity()
-								+ " $" + result.getProductPrice() + " $"
-								+ result.getItemTotal());
 			} else {
-				System.out.println("Product could not be purchased");
+				Request.instance().setItemQuantity(
+						String.valueOf(getNumber("Enter product quantity")));
+				result = store.purchaseProducts(Request.instance());
+				if (result.getResultCode() == Result.OPERATION_FAILED) {
+					System.out.println("Insufficient stock for "
+							+ result.getProductName());
+					System.out.println("Only " + result.getProductStock()
+							+ " units available");
+				} else {
+					System.out.println(result.getProductName() + " "
+							+ result.getItemQuantity() + " $"
+							+ result.getProductPrice() + " $"
+							+ result.getItemTotal());
+					System.out.println(
+							"Subtotal: $" + result.getTransactionTotal());
+					if (result.getOrderId() != "none") {
+						System.out.println("Reordered "
+								+ result.getOrderQuantity() + " of "
+								+ result.getProductName() + " as order number "
+								+ result.getOrderId());
+					}
+				}
 			}
-			System.out.println("Subtotal: $" + result.getTransactionTotal());
-			if (result.getOrderId() != "none") {
-				System.out.println("Reordered " + result.getOrderQuantity()
-						+ " of " + result.getProductName() + " as order number "
-						+ result.getOrderId());
-			}
-
 		} while (yesOrNo("Check out more products?"));
-		System.out
-				.println("Transaction Total: " + result.getTransactionTotal());
-		Request.instance().setTransactionChange(getToken("Enter cash value: "));
-		result = store.getChange(Request.instance());
-		System.out.println("Change owed: " + result.getTransactionChange());
+		result = store.checkTransaction(Request.instance());
+		if (result.getResultCode() == Result.TRANSACTION_EMPTY) {
+			System.out.println("Transaction terminated");
+		} else {
+			System.out.println(
+					"Transaction Total: " + result.getTransactionTotal());
+			do {
+				Request.instance().setTransactionChange(
+						getToken("Enter sufficient cash value: "));
+				result = store.getChange(Request.instance());
+			} while (result.getResultCode() == Result.INSUFFICIENT_FUNDS);
+			System.out.println("Change owed: " + result.getTransactionChange());
+		}
+
 	}
 
 	/**
@@ -382,27 +413,19 @@ public class UserInterface {
 		Request.instance().setProductId(getToken("Enter product id"));
 		Request.instance().setProductPrice(getToken("Enter new price"));
 		Result result = store.changePrice(Request.instance());
-		do {
-			switch (result.getResultCode()) {
-			case Result.NO_SUCH_PRODUCT:
-				System.out.println("No such item exists in the system");
-			case Result.OPERATION_FAILED:
-				System.out.println("Unable to change product price");
-				break;
-			case Result.OPERATION_COMPLETED:
-				System.out
-						.println("Price changed to " + result.getProductPrice()
-								+ " for the following product: "
-								+ result.getProductName());//
-				break;
-			default:
-				System.out.println("An error has occurred");
-			}
-
-			if (!yesOrNo("Change the price of another product?")) {
-				break;
-			}
-		} while (true);
+		switch (result.getResultCode()) {
+		case Result.NO_SUCH_PRODUCT:
+			System.out.println("No such item exists in the system");
+		case Result.OPERATION_FAILED:
+			System.out.println("Unable to change product price");
+			break;
+		case Result.OPERATION_COMPLETED:
+			System.out.println("Price changed to " + result.getProductPrice()
+					+ " for the following product: " + result.getProductName());//
+			break;
+		default:
+			System.out.println("An error has occurred");
+		}
 
 	}
 
@@ -414,21 +437,23 @@ public class UserInterface {
 	 */
 
 	public void getProductInformation() {
-		do {
-			Iterator<Result> iterator = store.getProducts();
-			String productName = getToken("Enter product name");
-			while (iterator.hasNext()) {
-				Result result = iterator.next();
-				if (result.getProductName().contains(productName)) {
-					System.out.println(result.getProductName() + "  "
-							+ result.getProductId() + "  "
-							+ result.getProductPrice() + "  "
-							+ result.getProductStock() + "  "
-							+ result.getProductReorderLevel());
-				}
+		Iterator<Result> iterator = store.getProducts();
+		String productName = getToken("Enter product name");
+		System.out.println(
+				"List of products starting with '" + productName + "'");
+		System.out.println(
+				"(product name, id, price, stock in hand, reorder level)");
+		while (iterator.hasNext()) {
+			Result result = iterator.next();
+			if (result.getProductName().contains(productName)) {
+				System.out.println(
+						result.getProductName() + "  " + result.getProductId()
+								+ "  " + result.getProductPrice() + "  "
+								+ result.getProductStock() + "  "
+								+ result.getProductReorderLevel());
 			}
-			System.out.println("End of listing");
-		} while (yesOrNo("Get another product?"));
+		}
+		System.out.println("End of listing");
 	}
 
 	/**
@@ -440,20 +465,22 @@ public class UserInterface {
 	 */
 
 	public void getMemberInformation() {
-		do {
-			Iterator<Result> iterator = store.getMembers();
-			String memberName = getToken("Enter member name");
-			while (iterator.hasNext()) {
-				Result result = iterator.next();
-				if (result.getMemberName().contains(memberName)) {
-					System.out.println(result.getMemberName() + "  "
-							+ result.getMemberAddress() + "  "
-							+ result.getMemberFeePaid() + "  "
-							+ result.getMemberId());
-				}
+		Iterator<Result> iterator = store.getMembers();
+		String memberName = getToken("Enter member name");
+		System.out
+				.println("List of members starting with '" + memberName + "'");
+		System.out
+				.println("(member name, address, fee paid, id, reorder level)");
+		while (iterator.hasNext()) {
+			Result result = iterator.next();
+			if (result.getMemberName().contains(memberName)) {
+				System.out.println(result.getMemberName() + "  "
+						+ result.getMemberAddress() + "  "
+						+ result.getMemberFeePaid() + "  "
+						+ result.getMemberId());
 			}
-			System.out.println("End of listing");
-		} while (yesOrNo("Lookup another Member?"));
+		}
+		System.out.println("End of listing");
 	}
 
 	/**

@@ -74,15 +74,15 @@ public class SafeIterator<T> implements Iterator<Result> {
 	}
 
 	/**
-	 * The user of SafeIterator must supply an Iterator to Book, Member or
-	 * Order. If Iterator<Book> is passed as the first parameter,
-	 * SafeItearator.BOOK should be passed as the second parameter. If
+	 * The user of SafeIterator must supply an Iterator to Member, Product or
+	 * Order. If Iterator<Product> is passed as the first parameter,
+	 * SafeItearator.PRODUCT should be passed as the second parameter. If
 	 * Iterator<Member> is passed as the first parameter, SafeItearator.MEMBER
 	 * should be the second parameter. If Iterator<Order> is passed as the first
 	 * parameter, SafeItearator.ORDER should be the second parameter.
 	 * 
-	 * @param iterator Iterator<Book>, Iterator<Member> or Iterator<Order>
-	 * @param type     SafeItearator.BOOK, SafeItearator.MEMBER or
+	 * @param iterator Iterator<Product>, Iterator<Member> or Iterator<Order>
+	 * @param type     SafeItearator.PRODUCT, SafeItearator.MEMBER or
 	 *                 SafeIterator.ORDER
 	 */
 	public SafeIterator(Iterator<T> iterator, Type type) {

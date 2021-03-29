@@ -180,10 +180,9 @@ public abstract class DataTransfer {
 		productStock = "none";
 		productPrice = "none";
 		productReorderLevel = "none";
-		itemQuantity = "none";
 		itemTotal = "none";
-		setOrderId("none");
-		setOrderQuantity("none");
+		orderId = "none";
+		orderQuantity = "none";
 		orderProductId = "none";
 		orderProductName = "none";
 		orderDate = "none";
@@ -193,14 +192,6 @@ public abstract class DataTransfer {
 		memberAddress = "none";
 		memberDateJoined = "none";
 		memberFeePaid = "none";
-	}
-
-	public String getItemQuantity() {
-		return itemQuantity;
-	}
-
-	public void setItemQuantity(String itemQuantity) {
-		this.itemQuantity = itemQuantity;
 	}
 
 	public String getItemTotal() {
@@ -265,5 +256,13 @@ public abstract class DataTransfer {
 
 	public void setOrderDate(String orderDate) {
 		this.orderDate = orderDate;
+	}
+
+	public String getItemQuantity() {
+		return itemQuantity;
+	}
+
+	public void setItemQuantity(String itemQuantity) {
+		this.itemQuantity = itemQuantity;
 	}
 }

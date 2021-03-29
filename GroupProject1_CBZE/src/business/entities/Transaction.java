@@ -21,7 +21,6 @@ public class Transaction implements Serializable {
 	private Calendar date;
 	private double total;
 	private double payment;
-	private boolean completed;
 	private Iterator<TransactionItem> iterator;
 
 	/**
@@ -98,13 +97,15 @@ public class Transaction implements Serializable {
 	}
 
 	/**
-	 * Method to calculate the change owed after processing transaction.
+	 * Method to determine if change is owed after processing transaction.
 	 * 
 	 * @return change change owed to customer.
 	 */
-	public double processTransaction() {
-		double change = Math.abs(total - payment);
-		return change;
+	public boolean processTransaction() {
+		if (payment >= total) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -147,6 +148,10 @@ public class Transaction implements Serializable {
 		return "Transaction [items=" + items + ", date=" + date + ", total="
 				+ total + ", payment=" + payment + ", iterator=" + iterator
 				+ "]";
+	}
+
+	public boolean isEmpty() {
+		return items.isEmpty();
 	}
 
 }
