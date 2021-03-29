@@ -329,7 +329,7 @@ public class UserInterface {
 					"No member with id " + Request.instance().getMemberId());
 			return;
 		}
-		store.createTransaction(Request.instance());
+		//store.createTransaction(Request.instance());
 		do {
 			Request.instance().setProductId(getToken("Enter product id"));
 			result = store.searchCatalog(Request.instance());

@@ -24,6 +24,8 @@ public class AutomatedTester {
 	private String[] productId = { "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12", "P13", "P14", "P15", "P16", "P17", "P18", "P19", "P20", "P21" };
 	private Product[] products = new Product[21];
 	private String[] shipmentRecieve = { "O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8", "O9", "O10", "O11", "O12", "O13", "O14", "O15", "O16", "O17", "O18" };
+	private String[] checkOutListId = { "P1", "P3", "P4" };
+	private String[] checkOutListQuantity = { "3", "5", "8" };
 	
 	/**
 	 * Tests Member Creation
@@ -79,6 +81,7 @@ public class AutomatedTester {
 			Request.instance().setOrderId(shipmentRecieve[count]);
 			Result result = Store.instance().processShipments(Request.instance());
 			//System.out.println(result.getProductId() + "  "  + result.getProductName() + "  " + result.getProductStock());
+			assert result.getResultCode() == Result.OPERATION_COMPLETED;
 			assert result.getProductId() == productId[count];
 			assert result.getProductName() == productName[count];
 		}
@@ -89,7 +92,13 @@ public class AutomatedTester {
 	 * Test's checking out a member's items.
 	 */
 	public void testCheckOut() {
-		
+		Request.instance().setMemberId("M1");
+		for (int count = 0; count < checkOutListId.length; count++) {
+			Request.instance().setProductId(checkOutListId[count]);
+			Request.instance().setItemQuantity(checkOutListQuantity[count]);
+			Result result = Store.instance().purchaseProducts(Request.instance());
+			assert result.getResultCode() == Result.OPERATION_COMPLETED;
+		}
 	}
 	
 	/**
@@ -107,6 +116,7 @@ public class AutomatedTester {
 		testAddProduct();
 		testRemoveMember();
 		testProcessShipment();
+		testCheckOut();
 		testChangePrice();
 	}
 	/*

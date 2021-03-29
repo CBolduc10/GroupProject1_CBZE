@@ -349,6 +349,7 @@ public class Store implements Serializable {
 		Product product = catalog.search(request.getProductId());
 		result.setProductFields(product);
 		int quantity = Integer.parseInt(request.getItemQuantity());
+		createTransaction(Request.instance()); //Moved from UI to here
 		Transaction transaction = member.getCurrentTransaction();
 		if (product.checkStock(quantity) == false) {
 			result.setResultCode(Result.OPERATION_FAILED);
@@ -360,7 +361,14 @@ public class Store implements Serializable {
 			if (product.checkReorder()) {
 				Order order = new Order(product.getId(), product.getName(),
 						product.getReorderLevel() * 2);
-				if (!orders.search(order.getId()).equals(order)) {
+				if (orders.search(order.getId()) != null) {
+					if (!orders.search(order.getId()).equals(order)) {
+						orders.insertOrder(order);
+						result.setOrderQuantity(
+								String.valueOf(order.getQuantity()));
+						result.setOrderId(order.getId());
+					}
+				} else {
 					orders.insertOrder(order);
 					result.setOrderQuantity(
 							String.valueOf(order.getQuantity()));
