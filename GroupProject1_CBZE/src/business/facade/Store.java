@@ -349,7 +349,6 @@ public class Store implements Serializable {
 		Product product = catalog.search(request.getProductId());
 		result.setProductFields(product);
 		int quantity = Integer.parseInt(request.getItemQuantity());
-		createTransaction(Request.instance()); //Moved from UI to here
 		Transaction transaction = member.getCurrentTransaction();
 		if (product.checkStock(quantity) == false) {
 			result.setResultCode(Result.OPERATION_FAILED);

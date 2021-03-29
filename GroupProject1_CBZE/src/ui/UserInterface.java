@@ -329,7 +329,7 @@ public class UserInterface {
 					"No member with id " + Request.instance().getMemberId());
 			return;
 		}
-		//store.createTransaction(Request.instance());
+		store.createTransaction(Request.instance());
 		do {
 			Request.instance().setProductId(getToken("Enter product id"));
 			result = store.searchCatalog(Request.instance());
@@ -553,14 +553,14 @@ public class UserInterface {
 	 */
 	public void getProducts() {
 		Iterator<Result> iterator = store.getProducts();
-		System.out.println("List of products (name, id, stock in hand, price, reorder level)");
+		System.out.println(
+				"List of products (name, id, stock in hand, price, reorder level)");
 		while (iterator.hasNext()) {
 			Result result = iterator.next();
-			System.out.println(
-					result.getProductName() + " " + result.getProductId() + " "
-							+ result.getProductStock() + " "
-							+ result.getProductPrice() + " "
-							+ result.getProductReorderLevel());
+			System.out.println(result.getProductName() + " "
+					+ result.getProductId() + " " + result.getProductStock()
+					+ " " + result.getProductPrice() + " "
+					+ result.getProductReorderLevel());
 		}
 		System.out.println("End of listing");
 	}
