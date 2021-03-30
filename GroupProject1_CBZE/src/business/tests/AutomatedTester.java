@@ -1,13 +1,23 @@
 package business.tests;
 
+/**
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ */
 import business.entities.Member;
 import business.entities.Product;
 import business.facade.Request;
 import business.facade.Result;
 import business.facade.Store;
 
+/**
+ * The AutomatedTester class is used to generate tests for the first six command
+ * processes for the Store system. It utilizes preset fields and implements them
+ * accordingly. The asserts allow for the system to be tested, notifying the
+ * user of any failed processes. After it runs successfully, the system has
+ * members, products, outstanding orders and a completed transaction.
+ * 
+ */
 public class AutomatedTester {
-	private Store store;
 	private String[] memberNames = { "Colin", "Ethan", "Zach", "Brian",
 			"Brahma", "John" };
 	private String[] memberAddresses = { "2641", "1165", "7798", "0445", "4653",
@@ -137,6 +147,9 @@ public class AutomatedTester {
 		assert result.getResultCode() == Result.OPERATION_COMPLETED;
 	}
 
+	/**
+	 * Tests all applicable methods
+	 */
 	public void testAll() {
 		testAddMember();
 		testAddProduct();

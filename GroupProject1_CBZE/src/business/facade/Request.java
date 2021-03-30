@@ -1,23 +1,23 @@
 package business.facade;
 
+/**
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ */
 import java.util.Calendar;
 
 /**
  * This class is used for requesting many of the results of the store system's
  * business logic to user interface. It is a singleton
  * 
- * At present, the Request object returns an int code,plus values of selected
- * fields of Member, Product, TransactionItem and Order. The applicable fields
- * are found in DataTransfer.
- * 
- * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ * At present, the Request object transfers values for selected fields of
+ * Member, Product, TransactionItem and Order. The applicable fields are found
+ * in DataTransfer.
  *
  */
 public class Request extends DataTransfer {
 	private static Request request;
 	private Calendar startDate;
 	private Calendar endDate;
-	private int itemQuantity;
 
 	/**
 	 * This is a singleton class. Hence the private constructor.
@@ -38,18 +38,38 @@ public class Request extends DataTransfer {
 		return request;
 	}
 
+	/**
+	 * Getter for start date.
+	 * 
+	 * @return startDate
+	 */
 	public Calendar getStartDate() {
 		return startDate;
 	}
 
+	/**
+	 * Setter for start date.
+	 * 
+	 * @param startDate
+	 */
 	public void setStartDate(Calendar startDate) {
 		this.startDate = startDate;
 	}
 
+	/**
+	 * Getter for end date.
+	 * 
+	 * @return endDate
+	 */
 	public Calendar getEndDate() {
 		return endDate;
 	}
 
+	/**
+	 * Setter for end date.
+	 * 
+	 * @param endDate
+	 */
 	public void setEndDate(Calendar endDate) {
 		this.endDate = endDate;
 	}

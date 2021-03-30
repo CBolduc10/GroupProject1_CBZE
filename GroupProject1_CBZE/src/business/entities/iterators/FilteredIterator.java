@@ -1,5 +1,8 @@
 package business.entities.iterators;
 
+/**
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ */
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
@@ -9,8 +12,6 @@ import business.entities.Transaction;
 /**
  * This class implements the Iterator interface to iterate only on items that
  * satisfy a certain predicate.
- * 
- * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  * @param <T> the type of the item to be traversed
  */
@@ -33,11 +34,17 @@ public class FilteredIterator implements Iterator<Transaction> {
 		getNextItem();
 	}
 
+	/**
+	 * Overrides the hasNext() method. Checks for next element.
+	 */
 	@Override
 	public boolean hasNext() {
 		return item != null;
 	}
 
+	/**
+	 * Method to check and return element by calling getNextItem().
+	 */
 	@Override
 	public Transaction next() {
 		if (!hasNext()) {
@@ -48,7 +55,7 @@ public class FilteredIterator implements Iterator<Transaction> {
 		return returnValue;
 	}
 
-	/*
+	/**
 	 * This method searches for the next item that satisfies the predicate. If
 	 * none is found, the item field is set to null.
 	 */

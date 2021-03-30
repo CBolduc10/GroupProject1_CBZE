@@ -4,9 +4,9 @@ package business.facade;
  * This class is used for returning many of the results of the store system's
  * business logic to user interface.
  * 
- * At present, the Result object returns an int code,plus values of selected
- * fields of Member, Product, TransactionItem and Order. They are the fields
- * found in DataTransfer.
+ * At present, the Result object returns an int code, plus values of selected
+ * fields of Member, Product, Transaction/TransactionItem and Order. They are
+ * the fields found in DataTransfer.
  * 
  * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
@@ -25,10 +25,20 @@ public class Result extends DataTransfer {
 
 	private int resultCode;
 
+	/**
+	 * Getter for result code
+	 * 
+	 * @return resultCode
+	 */
 	public int getResultCode() {
 		return resultCode;
 	}
 
+	/**
+	 * Setter for result code
+	 * 
+	 * @param resultCode
+	 */
 	public void setResultCode(int resultCode) {
 		this.resultCode = resultCode;
 	}

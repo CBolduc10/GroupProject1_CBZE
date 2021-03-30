@@ -1,5 +1,8 @@
 package business.entities.iterators;
 
+/**
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ */
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -13,13 +16,12 @@ import business.facade.Result;
 
 /**
  * This Iterator implementation is tailor-made to supply "read-only" versions of
- * Book and Member objects. It is generic. If the user chooses Book for the
- * generic parameter, they should also supply SafeIterator.BOOK as the second
- * parameter to the constructor. Similarly, if they choose Member instead, they
- * should also choose SafeIterator.MEMBER as the second parameter of
- * constructor.
- * 
- * @author Brahma Dathan
+ * Member, Order, and Product objects. It is generic. If the user chooses
+ * Product for the generic parameter, they should also supply
+ * SafeIterator.PRODUCT as the second parameter to the constructor. Similarly,
+ * if they choose Member instead, they should also choose SafeIterator.MEMBER as
+ * the second parameter of constructor. If they choose Order instead, they
+ * should also choose SafeIterator.Order as the second parameter of constructor.
  *
  * @param <T> Either Book, Member or Order
  */
@@ -34,17 +36,15 @@ public class SafeIterator<T> implements Iterator<Result> {
 	/**
 	 * This class is designed to ensure that the appropriate object is used to
 	 * copy to the Result object.
-	 * 
-	 * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
 	 *
 	 */
 	public abstract static class Type {
 		/**
 		 * The copy method is used to copy the object to Result. Object is
-		 * Product or Member at present.
+		 * Product, Order, or Member at present.
 		 * 
 		 * @param result the Result object
-		 * @param object the Product or Member object
+		 * @param object the Product, Member, or Order object
 		 */
 		public abstract void copy(Result result, Object object);
 
@@ -90,11 +90,17 @@ public class SafeIterator<T> implements Iterator<Result> {
 		this.type = type;
 	}
 
+	/**
+	 * Overridden hasNext() method for iterator
+	 */
 	@Override
 	public boolean hasNext() {
 		return iterator.hasNext();
 	}
 
+	/**
+	 * Overridden next() method for iterator
+	 */
 	@Override
 	public Result next() {
 		if (iterator.hasNext()) {

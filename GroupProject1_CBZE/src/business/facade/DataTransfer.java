@@ -1,5 +1,8 @@
 package business.facade;
 
+/**
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ */
 import business.entities.Member;
 import business.entities.Order;
 import business.entities.Product;
@@ -9,8 +12,6 @@ import business.entities.Product;
  * UserInterface. It is also used to support iterating over Member, Product,
  * TransactionItem and Order objects. The class stores copies of fields that may
  * be sent in either direction.
- * 
- * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public abstract class DataTransfer {
@@ -41,6 +42,10 @@ public abstract class DataTransfer {
 	public DataTransfer() {
 		reset();
 	}
+
+	/*
+	 * Getters and setters for all fields
+	 */
 
 	public String getProductId() {
 		return productId;
@@ -130,70 +135,6 @@ public abstract class DataTransfer {
 		this.memberFeePaid = memberFeePaid;
 	}
 
-	/**
-	 * Sets all the member-related fields using the Member parameter.
-	 * 
-	 * @param member the member whose fields should be copied.
-	 */
-	public void setMemberFields(Member member) {
-		memberId = member.getId();
-		memberName = member.getName();
-		memberPhone = member.getPhone();
-		memberAddress = member.getAddress();
-		memberDateJoined = member.getDateJoined().toString();
-		memberFeePaid = String.valueOf(member.getFeePaid());
-	}
-
-	/**
-	 * Sets all the Product-related fields using the Product parameter. If the
-	 * Product is not issued "none" is stored in the borrower and due date
-	 * fields.
-	 * 
-	 * @param Product the Product whose fields should be copied.
-	 */
-	public void setProductFields(Product product) {
-		productId = product.getId();
-		productName = product.getName();
-		if (product.getStock() != 0) {
-			productStock = String.valueOf(product.getStock());
-		} else {
-			productStock = "none";
-		}
-		productPrice = String.valueOf(product.getPrice());
-		productReorderLevel = String.valueOf(product.getReorderLevel());
-	}
-
-	public void setOrderFields(Order order) {
-		orderId = order.getId();
-		orderProductId = order.getProductId();
-		orderProductName = order.getProductName();
-		orderQuantity = String.valueOf(order.getQuantity());
-		orderDate = order.getDate();
-	}
-
-	/**
-	 * Sets all String fields to "none"
-	 */
-	public void reset() {
-		productId = "none";
-		productName = "none";
-		productStock = "none";
-		productPrice = "none";
-		productReorderLevel = "none";
-		itemTotal = "none";
-		orderId = "none";
-		orderQuantity = "none";
-		orderProductId = "none";
-		orderProductName = "none";
-		orderDate = "none";
-		memberId = "none";
-		memberName = "none";
-		memberPhone = "none";
-		memberAddress = "none";
-		memberDateJoined = "none";
-		memberFeePaid = "none";
-	}
-
 	public String getItemTotal() {
 		return itemTotal;
 	}
@@ -264,5 +205,77 @@ public abstract class DataTransfer {
 
 	public void setItemQuantity(String itemQuantity) {
 		this.itemQuantity = itemQuantity;
+	}
+
+	/**
+	 * Sets all the member-related fields using the Member parameter.
+	 * 
+	 * @param member the member whose fields should be copied.
+	 */
+	public void setMemberFields(Member member) {
+		memberId = member.getId();
+		memberName = member.getName();
+		memberPhone = member.getPhone();
+		memberAddress = member.getAddress();
+		memberDateJoined = member.getDateJoined().toString();
+		memberFeePaid = String.valueOf(member.getFeePaid());
+	}
+
+	/**
+	 * Sets all the Product-related fields using the Product parameter. If the
+	 * Product is not issued "none" is stored in the borrower and due date
+	 * fields.
+	 * 
+	 * @param Product the Product whose fields should be copied.
+	 */
+	public void setProductFields(Product product) {
+		productId = product.getId();
+		productName = product.getName();
+		if (product.getStock() != 0) {
+			productStock = String.valueOf(product.getStock());
+		} else {
+			productStock = "none";
+		}
+		productPrice = String.valueOf(product.getPrice());
+		productReorderLevel = String.valueOf(product.getReorderLevel());
+	}
+
+	/**
+	 * Sets all the order-related fields using the Order parameter.
+	 * 
+	 * @param order the order whose fields should be copied.
+	 */
+	public void setOrderFields(Order order) {
+		orderId = order.getId();
+		orderProductId = order.getProductId();
+		orderProductName = order.getProductName();
+		orderQuantity = String.valueOf(order.getQuantity());
+		orderDate = order.getDate();
+	}
+
+	/**
+	 * Sets all String fields to "none"
+	 */
+	public void reset() {
+		productId = "none";
+		productName = "none";
+		productStock = "none";
+		productPrice = "none";
+		productReorderLevel = "none";
+		itemQuantity = "none";
+		itemTotal = "none";
+		transactionTotal = "none";
+		transactionChange = "none";
+		orderId = "none";
+		orderQuantity = "none";
+		orderProductId = "none";
+		orderProductName = "none";
+		orderDate = "none";
+		memberId = "none";
+		memberName = "none";
+		memberPhone = "none";
+		memberAddress = "none";
+		memberDateJoined = "none";
+		memberFeePaid = "none";
 	}
 }

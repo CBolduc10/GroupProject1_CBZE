@@ -1,5 +1,8 @@
 package business.entities.iterators;
 
+/**
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ */
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -10,8 +13,6 @@ import business.facade.Result;
  * This Iterator implementation is tailor-made to supply a "read-only" version
  * of Product objects. The user should supply an iterator to Product as the
  * parameter to the constructor.
- * 
- * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public class SafeProductIterator implements Iterator<Result> {

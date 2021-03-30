@@ -1,5 +1,8 @@
 package business.entities;
 
+/**
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ */
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,8 +17,6 @@ import business.entities.iterators.FilteredIterator;
 
 /**
  * Member represents a member (customer) of the store.
- * 
- * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public class Member implements Serializable, Matchable<String> {
@@ -262,6 +263,9 @@ public class Member implements Serializable, Matchable<String> {
 		return true;
 	}
 
+	/**
+	 * Method to match via a string identifier (per implementing Matchable)
+	 */
 	@Override
 	public boolean matches(String id) {
 		return this.id.equals(id);
