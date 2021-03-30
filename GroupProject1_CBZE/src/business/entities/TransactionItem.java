@@ -7,7 +7,7 @@ package business.entities;
 import java.io.Serializable;
 
 /**
- * Represents an product and quantity itemized within a transaction.
+ * Represents an product with associated quantity itemized within a transaction.
  *
  */
 

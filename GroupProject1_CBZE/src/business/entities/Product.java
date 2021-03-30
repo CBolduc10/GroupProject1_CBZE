@@ -1,11 +1,12 @@
 package business.entities;
 
+/**
+ * @author Zachary Boling-Green, Ethan Nunn, Brian Le and Colin Bolduc
+ */
 import java.io.Serializable;
 
 /**
  * Product represents a product available.
- * 
- * @author Zachary Boling-Green, Ethan Nunn, Brian Le and Colin Bolduc
  *
  */
 public class Product implements Serializable, Matchable<String> {
@@ -202,6 +203,9 @@ public class Product implements Serializable, Matchable<String> {
 				+ " || MSRP:" + price;
 	}
 
+	/**
+	 * Method to match via a string identifier (per implementing Matchable)
+	 */
 	@Override
 	public boolean matches(String id) {
 		return this.id.equals(id);

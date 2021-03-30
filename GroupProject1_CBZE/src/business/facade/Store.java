@@ -206,25 +206,24 @@ public class Store implements Serializable {
 		if (product.checkStock(quantity) == false) {
 			result.setResultCode(Result.OPERATION_FAILED);
 			return result;
-		} else {
-			TransactionItem item = new TransactionItem(product, quantity);
-			transaction.addItem(item);
-			product.setStock(product.getStock() - item.getQuantity());
-			result.setItemQuantity(String.valueOf(item.getQuantity()));
-			result.setItemTotal(String.valueOf(item.getTotal()));
-			result.setTransactionTotal(String.valueOf(transaction.getTotal()));
-			if (product.checkReorder()) {
-				Order order = new Order(product.getId(), product.getName(),
-						product.getReorderLevel());
-				orders.insert(order);
-				result.setOrderQuantity(String.valueOf(order.getQuantity()));
-				result.setOrderId(order.getId());
-				result.setResultCode(Result.ORDER_PLACED);
-				return result;
-			}
-			result.setResultCode(Result.OPERATION_COMPLETED);
+		}
+		TransactionItem item = new TransactionItem(product, quantity);
+		transaction.addItem(item);
+		product.setStock(product.getStock() - item.getQuantity());
+		result.setItemQuantity(String.valueOf(item.getQuantity()));
+		result.setItemTotal(String.valueOf(item.getTotal()));
+		result.setTransactionTotal(String.valueOf(transaction.getTotal()));
+		if (product.checkReorder()) {
+			Order order = new Order(product.getId(), product.getName(),
+					product.getReorderLevel());
+			orders.insert(order);
+			result.setOrderQuantity(String.valueOf(order.getQuantity()));
+			result.setOrderId(order.getId());
+			result.setResultCode(Result.ORDER_PLACED);
 			return result;
 		}
+		result.setResultCode(Result.OPERATION_COMPLETED);
+		return result;
 	}
 
 	/**
@@ -262,28 +261,14 @@ public class Store implements Serializable {
 			return result;
 		}
 		result.setMemberFields(member);
-		if (member.addTransaction(new Transaction())) {
-			result.setResultCode(Result.OPERATION_COMPLETED);
-			return result;
-		}
-		result.setResultCode(Result.OPERATION_FAILED);
+		member.addTransaction(new Transaction());
+		result.setResultCode(Result.OPERATION_COMPLETED);
 		return result;
-
-	}
-
-	/**
-	 * Deletes a transaction for a specific member.
-	 * 
-	 * @param (via request) member id
-	 */
-	public void deleteTransaction(Request request) {
-		Member member = members.search(request.getMemberId());
-		member.removeCurrentTransaction();
 	}
 
 	/**
 	 * Handles the processing of a transaction for a specific member by
-	 * calculating total and change owed upon payment.
+	 * calculating change owed upon payment.
 	 * 
 	 * @param (via request) member id, payment from customer (transactionChange)
 	 * @return result transactionChange via processing transaction
@@ -291,10 +276,6 @@ public class Store implements Serializable {
 	public Result getChange(Request request) {
 		Result result = new Result();
 		Member member = members.search(request.getMemberId());
-		if (member == null) {
-			result.setResultCode(Result.NO_SUCH_MEMBER);
-			return result;
-		}
 		Transaction transaction = member.getCurrentTransaction();
 		transaction
 				.setPayment(Double.parseDouble(request.getTransactionChange()));
@@ -303,10 +284,9 @@ public class Store implements Serializable {
 					.abs(transaction.getPayment() - transaction.getTotal())));
 			result.setResultCode(Result.TRANSACTION_COMPLETE);
 			return result;
-		} else {
-			result.setResultCode(Result.INSUFFICIENT_FUNDS);
-			return result;
 		}
+		result.setResultCode(Result.INSUFFICIENT_FUNDS);
+		return result;
 	}
 
 	/**

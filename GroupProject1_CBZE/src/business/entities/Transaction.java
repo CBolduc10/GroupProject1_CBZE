@@ -1,7 +1,6 @@
 package business.entities;
 
 /**
- * 
  * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  */
 import java.io.Serializable;
@@ -150,6 +149,11 @@ public class Transaction implements Serializable {
 				+ "]";
 	}
 
+	/**
+	 * Method to check if the collection is empty.
+	 * 
+	 * @return true iff the collection is empty
+	 */
 	public boolean isEmpty() {
 		return items.isEmpty();
 	}

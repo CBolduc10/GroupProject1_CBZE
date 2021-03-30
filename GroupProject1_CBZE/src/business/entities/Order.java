@@ -1,5 +1,8 @@
 package business.entities;
 
+/**
+ * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
+ */
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,8 +12,6 @@ import java.util.GregorianCalendar;
 
 /**
  * Order represents the order of a product for the store.
- * 
- * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
 public class Order implements Serializable, Matchable<String> {
@@ -82,10 +83,20 @@ public class Order implements Serializable, Matchable<String> {
 		this.quantity = quantity;
 	}
 
+	/**
+	 * Getter for product name
+	 * 
+	 * @return name
+	 */
 	public String getProductName() {
 		return productName;
 	}
 
+	/**
+	 * Setter for product name
+	 * 
+	 * @param productName
+	 */
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
@@ -142,6 +153,9 @@ public class Order implements Serializable, Matchable<String> {
 		return true;
 	}
 
+	/**
+	 * Method to match via a string identifier (per implementing Matchable)
+	 */
 	@Override
 	public boolean matches(String id) {
 		return this.id.equals(id);

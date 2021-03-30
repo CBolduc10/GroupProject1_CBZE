@@ -327,10 +327,6 @@ public class UserInterface {
 					"No member with id " + Request.instance().getMemberId());
 			return;
 		}
-		if (result.getResultCode() == Result.OPERATION_FAILED) {
-			System.out.println("Cannot create transaction");
-			return;
-		}
 		do {
 			Request.instance().setProductId(getToken("Enter product id"));
 			Request.instance().setItemQuantity(
@@ -358,7 +354,7 @@ public class UserInterface {
 					}
 				}
 			}
-		} while (yesOrNo("Check out more products?"));
+		} while (yesOrNo("Check out more items?"));
 		result = store.checkTransaction(Request.instance());
 		if (result.getResultCode() == Result.TRANSACTION_EMPTY) {
 			System.out.println("Transaction terminated");
