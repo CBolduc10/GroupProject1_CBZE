@@ -18,7 +18,7 @@ import business.entities.iterators.FilteredIterator;
  * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
-public class Member implements Serializable {
+public class Member implements Serializable, Matchable<String> {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private String address;
@@ -260,6 +260,11 @@ public class Member implements Serializable {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean matches(String id) {
+		return this.id.equals(id);
 	}
 
 	public static void save(ObjectOutputStream output) throws IOException {

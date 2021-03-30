@@ -13,7 +13,7 @@ import java.util.GregorianCalendar;
  * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
  *
  */
-public class Order implements Serializable {
+public class Order implements Serializable, Matchable<String> {
 	private static final long serialVersionUID = 1L;
 	private static final String ORDER_STRING = "O";
 	private static int orderCounter;
@@ -33,7 +33,7 @@ public class Order implements Serializable {
 		this.id = ORDER_STRING + ++orderCounter;
 		this.productId = productId;
 		this.productName = productName;
-		this.quantity = quantity;
+		this.quantity = quantity * 2;
 		this.date = new GregorianCalendar();
 	}
 
@@ -140,6 +140,11 @@ public class Order implements Serializable {
 		if (quantity != other.quantity)
 			return false;
 		return true;
+	}
+
+	@Override
+	public boolean matches(String id) {
+		return this.id.equals(id);
 	}
 
 	/**

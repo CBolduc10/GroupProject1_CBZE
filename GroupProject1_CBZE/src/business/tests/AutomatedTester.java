@@ -111,15 +111,16 @@ public class AutomatedTester {
 	 */
 	public void testCheckOut() {
 		Request.instance().setMemberId("M1");
-		Store.instance().createTransaction(Request.instance());
+		Result result = Store.instance().createTransaction(Request.instance());
+		assert result.getResultCode() == Result.OPERATION_COMPLETED;
 		for (int count = 0; count < checkOutListId.length; count++) {
 			Request.instance().setProductId(checkOutListId[count]);
 			Request.instance().setItemQuantity(checkOutListQuantity[count]);
-			Result result = Store.instance()
-					.purchaseProducts(Request.instance());
-			assert result.getResultCode() == Result.OPERATION_COMPLETED;
+			result = Store.instance().purchaseProducts(Request.instance());
+			assert result.getResultCode() == Result.OPERATION_COMPLETED
+					|| result.getResultCode() == Result.ORDER_PLACED;
 		}
-		Result result = Store.instance().checkTransaction(Request.instance());
+		result = Store.instance().checkTransaction(Request.instance());
 		assert result.getResultCode() == Result.OPERATION_COMPLETED;
 		Request.instance().setTransactionChange("150");
 		result = Store.instance().getChange(Request.instance());
