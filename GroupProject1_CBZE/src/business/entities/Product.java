@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author Zachary Boling-Green, Ethan Nunn, Brian Le and Colin Bolduc
  *
  */
-public class Product implements Serializable {
+public class Product implements Serializable, Matchable<String> {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private String id;
@@ -200,5 +200,10 @@ public class Product implements Serializable {
 		return "Product Name: " + name + "|| Product ID: " + id
 				+ " || Reorder Level: " + reorderLevel + "  || Qty: " + stock
 				+ " || MSRP:" + price;
+	}
+
+	@Override
+	public boolean matches(String id) {
+		return this.id.equals(id);
 	}
 }

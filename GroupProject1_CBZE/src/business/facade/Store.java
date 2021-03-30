@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import business.entities.ItemList;
 import business.entities.Member;
 import business.entities.Order;
 import business.entities.Product;
@@ -37,86 +38,19 @@ public class Store implements Serializable {
 	 * A collection class in Store that stores and handles/processes Order
 	 * objects.
 	 */
-	private class OrderList implements Iterable<Order>, Serializable {
+	private class OrderList extends ItemList<Order, String>
+			implements Iterable<Order>, Serializable {
 		private static final long serialVersionUID = 1L;
-		private List<Order> orders = new LinkedList<Order>();
-
-		/**
-		 * Checks whether an Order with a given Order id exists.
-		 * 
-		 * @param orderId the id of the order
-		 * @return true iff the order exists
-		 * 
-		 */
-		public Order search(String orderId) {
-			for (Iterator<Order> iterator = orders.iterator(); iterator
-					.hasNext();) {
-				Order order = (Order) iterator.next();
-				if (order.getId().equals(orderId)) {
-					return order;
-				}
-			}
-			return null;
-		}
-
-		/**
-		 * Inserts an order into the collection
-		 * 
-		 * @param order the order to be inserted
-		 * @return true iff the order could be inserted. Currently always true
-		 */
-		public boolean insertOrder(Order order) {
-			orders.add(order);
-			return true;
-		}
-
-		/**
-		 * Returns an iterator to all orders
-		 * 
-		 * @return iterator to the collection
-		 */
-		public Iterator<Order> iterator() {
-			return orders.iterator();
-		}
-
-		public boolean remove(Order order) {
-			return orders.remove(order);
-		}
-
-		/**
-		 * String form of the collection
-		 * 
-		 */
-		public String toString() {
-			return orders.toString();
-		}
 	}
 
 	/**
 	 * The collection class in Store for Product objects.
 	 *
 	 */
-	private class Catalog implements Iterable<Product>, Serializable {
+	private class Catalog extends ItemList<Product, String>
+			implements Iterable<Product>, Serializable {
 		private static final long serialVersionUID = 1L;
 		private List<Product> products = new LinkedList<Product>();
-
-		/**
-		 * Checks whether a product with a given product id exists.
-		 * 
-		 * @param productId the id of the product
-		 * @return true iff the product exists
-		 * 
-		 */
-		public Product search(String productId) {
-			for (Iterator<Product> iterator = products.iterator(); iterator
-					.hasNext();) {
-				Product product = (Product) iterator.next();
-				if (product.getId().equals(productId)) {
-					return product;
-				}
-			}
-			return null;
-		}
 
 		/**
 		 * Checks whether a product with a given name exists.
@@ -135,100 +69,15 @@ public class Store implements Serializable {
 			}
 			return false;
 		}
-
-		/**
-		 * Inserts a product into the collection
-		 * 
-		 * @param product the product to be inserted
-		 * @return true iff the product could be inserted. Currently always true
-		 */
-		public boolean insertProduct(Product product) {// insertBook
-			products.add(product);
-			return true;
-		}
-
-		/**
-		 * Returns an iterator to all products
-		 * 
-		 * @return iterator to the collection
-		 */
-		public Iterator<Product> iterator() {
-			return products.iterator();
-		}
-
-		/**
-		 * String form of the collection
-		 * 
-		 */
-		public String toString() {
-			return products.toString();
-		}
 	}
 
 	/**
 	 * The collection class for Member objects
 	 *
 	 */
-	private class MemberList implements Iterable<Member>, Serializable {
+	private class MemberList extends ItemList<Member, String>
+			implements Iterable<Member>, Serializable {
 		private static final long serialVersionUID = 1L;
-		private List<Member> members = new LinkedList<Member>();
-
-		/**
-		 * Checks whether a member with a given member id exists.
-		 * 
-		 * @param memberId the id of the member
-		 * @return true iff member exists
-		 * 
-		 */
-		public Member search(String memberId) {
-			for (Iterator<Member> iterator = members.iterator(); iterator
-					.hasNext();) {
-				Member member = iterator.next();
-				if (member.getId().equals(memberId)) {
-					return member;
-				}
-			}
-			return null;
-		}
-
-		/**
-		 * Inserts a member into the collection
-		 * 
-		 * @param member the member to be inserted
-		 * @return true iff the member could be inserted. Currently always true
-		 */
-		public boolean insertMember(Member member) {
-			members.add(member);
-			return true;
-		}
-
-		public Iterator<Member> iterator() {
-			return members.iterator();
-		}
-
-		/**
-		 * String form of the collection
-		 * 
-		 */
-		@Override
-		public String toString() {
-			return members.toString();
-		}
-
-		/**
-		 * Method to delete a member from the collection.
-		 * 
-		 * @param memberId member ID of member to be removed
-		 * @return removed member
-		 */
-		public boolean remove(String memberId) {
-			Member member = search(memberId);
-			if (member == null) {
-				return false;
-			} else {
-				return members.remove(member);
-			}
-		}
 	}
 
 	/**
@@ -265,7 +114,7 @@ public class Store implements Serializable {
 		Member member = new Member(request.getMemberName(),
 				request.getMemberAddress(), request.getMemberPhone(),
 				request.getMemberFeePaid());
-		if (members.insertMember(member)) {
+		if (members.insert(member)) {
 			result.setResultCode(Result.OPERATION_COMPLETED);
 			result.setMemberFields(member);
 			return result;
@@ -317,12 +166,12 @@ public class Store implements Serializable {
 			result.setResultCode(Result.DUPLICATE_ID);
 			return result;
 		}
-		if (catalog.insertProduct(product)) {
+		if (catalog.insert(product)) {
 			result.setResultCode(Result.OPERATION_COMPLETED);
 			result.setProductFields(product);
 			Order order = new Order(product.getId(), product.getName(),
-					product.getReorderLevel() * 2);
-			orders.insertOrder(order);
+					product.getReorderLevel());
+			orders.insert(order);
 			return result;
 		}
 		result.setResultCode(Result.OPERATION_FAILED);
@@ -347,6 +196,10 @@ public class Store implements Serializable {
 		Member member = members.search(request.getMemberId());
 		result.setMemberFields(member);
 		Product product = catalog.search(request.getProductId());
+		if (product == null) {
+			result.setResultCode(Result.NO_SUCH_PRODUCT);
+			return result;
+		}
 		result.setProductFields(product);
 		int quantity = Integer.parseInt(request.getItemQuantity());
 		Transaction transaction = member.getCurrentTransaction();
@@ -357,27 +210,19 @@ public class Store implements Serializable {
 			TransactionItem item = new TransactionItem(product, quantity);
 			transaction.addItem(item);
 			product.setStock(product.getStock() - item.getQuantity());
-			if (product.checkReorder()) {
-				Order order = new Order(product.getId(), product.getName(),
-						product.getReorderLevel() * 2);
-				if (orders.search(order.getId()) != null) {
-					if (!orders.search(order.getId()).equals(order)) {
-						orders.insertOrder(order);
-						result.setOrderQuantity(
-								String.valueOf(order.getQuantity()));
-						result.setOrderId(order.getId());
-					}
-				} else {
-					orders.insertOrder(order);
-					result.setOrderQuantity(
-							String.valueOf(order.getQuantity()));
-					result.setOrderId(order.getId());
-				}
-			}
-			result.setResultCode(Result.OPERATION_COMPLETED);
 			result.setItemQuantity(String.valueOf(item.getQuantity()));
 			result.setItemTotal(String.valueOf(item.getTotal()));
 			result.setTransactionTotal(String.valueOf(transaction.getTotal()));
+			if (product.checkReorder()) {
+				Order order = new Order(product.getId(), product.getName(),
+						product.getReorderLevel());
+				orders.insert(order);
+				result.setOrderQuantity(String.valueOf(order.getQuantity()));
+				result.setOrderId(order.getId());
+				result.setResultCode(Result.ORDER_PLACED);
+				return result;
+			}
+			result.setResultCode(Result.OPERATION_COMPLETED);
 			return result;
 		}
 	}
@@ -480,7 +325,7 @@ public class Store implements Serializable {
 			Product product = catalog.search(order.getProductId());
 			int quantity = order.getQuantity();
 			product.setStock(product.getStock() + quantity);
-			if (!orders.remove(order)) {
+			if (!orders.remove(order.getId())) {
 				result.setResultCode(Result.OPERATION_FAILED);
 				return result;
 			}

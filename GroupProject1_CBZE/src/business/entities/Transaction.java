@@ -67,7 +67,7 @@ public class Transaction implements Serializable {
 	 * @param payment
 	 */
 	public void setPayment(double payment) {
-		this.payment = payment;
+		this.payment = Math.round(payment * 100.00) / 100.00;
 	}
 
 	/**

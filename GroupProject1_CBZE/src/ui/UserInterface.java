@@ -1,9 +1,7 @@
 package ui;
 
 /**
- * 
  * @author Zachary Boling-Green, Brian Le, Ethan Nunn and Colin Bolduc
- * @Copyright (c) 2010
  */
 
 import java.io.BufferedReader;
@@ -37,19 +35,19 @@ public class UserInterface {
 	private static Store store;
 	private static final int EXIT = 0;
 	private static final int ADD_MEMBER = 1;
-	private static final int REMOVE_MEMBER = 2;// REMOVE MEMBER
-	private static final int ADD_PRODUCT = 3;// ADD PRODUCT
-	private static final int CHECK_OUT = 4;// CHECK OUT PRODUCTS
-	private static final int PROCESS_SHIPMENT = 5;// PROCESS INCOMING SHIPMENT
-	private static final int CHANGE_PRICE = 6;// MODIFY PRODUCT PRICE
-	private static final int PRODUCT_INFORMATION = 7;// DISPLAY PRODUCT INFO
-	private static final int MEMBER_INFORMATION = 8;// DISPLAY MEMBER INFO
-	private static final int PRINT_TRANSACTIONS = 9;// PRINT TRANSACTIONS
-	private static final int OUTSTANDING_ORDERS = 10;// GET OUTRSTANDING ORDERS
-	private static final int GET_MEMBERS = 11; // GET LIST OF ALL MEMBERS
-	private static final int GET_PRODUCTS = 12;// GET LIST OF ALL PRODUCTS
-	private static final int SAVE = 13; // SAVE DATA
-	private static final int HELP = 14; // DISPLAY HELP
+	private static final int REMOVE_MEMBER = 2;
+	private static final int ADD_PRODUCT = 3;
+	private static final int CHECK_OUT = 4;
+	private static final int PROCESS_SHIPMENT = 5;
+	private static final int CHANGE_PRICE = 6;
+	private static final int PRODUCT_INFORMATION = 7;
+	private static final int MEMBER_INFORMATION = 8;
+	private static final int PRINT_TRANSACTIONS = 9;
+	private static final int OUTSTANDING_ORDERS = 10;
+	private static final int GET_MEMBERS = 11;
+	private static final int GET_PRODUCTS = 12;
+	private static final int SAVE = 13;
+	private static final int HELP = 14;
 
 	/**
 	 * Made private for singleton pattern. Conditionally looks for any saved
@@ -164,14 +162,14 @@ public class UserInterface {
 	 * @return the double corresponding to the string
 	 * 
 	 */
-	public double getDouble(String prompt) {
+	public double getCashDouble(String prompt) {
 		do {
 			try {
 				String item = getToken(prompt);
 				Double number = Double.valueOf(item);
 				return number.doubleValue();
 			} catch (NumberFormatException nfe) {
-				System.out.println("Please input a number ");
+				System.out.println("Please input a cash value ");
 			}
 		} while (true);
 	}
@@ -302,7 +300,7 @@ public class UserInterface {
 		Request.instance().setProductStock(
 				String.valueOf(getNumber("Enter stock at hand")));
 		Request.instance()
-				.setProductPrice(String.valueOf(getDouble("Enter price")));
+				.setProductPrice(String.valueOf(getCashDouble("Enter price")));
 		Request.instance().setProductReorderLevel(
 				String.valueOf(getNumber("Enter reorder level")));
 		Result result = store.addProduct(Request.instance());
@@ -316,9 +314,9 @@ public class UserInterface {
 	}
 
 	/**
-	 * Method to be called for checking out products. Prompts the user for the
-	 * appropriate values and uses the appropriate Store method for purchasing
-	 * and paying for products.
+	 * Method called for checking out products. Prompts the user for the
+	 * appropriate values and uses applicable Store methods for purchasing and
+	 * paying for products.
 	 * 
 	 */
 	public void checkOutProducts() {
@@ -335,18 +333,16 @@ public class UserInterface {
 		}
 		do {
 			Request.instance().setProductId(getToken("Enter product id"));
-			result = store.searchCatalog(Request.instance());
+			Request.instance().setItemQuantity(
+					String.valueOf(getNumber("Enter product quantity")));
+			result = store.purchaseProducts(Request.instance());
 			if (result.getResultCode() == Result.NO_SUCH_PRODUCT) {
 				System.out.println("Product not found");
 			} else {
-				Request.instance().setItemQuantity(
-						String.valueOf(getNumber("Enter product quantity")));
-				result = store.purchaseProducts(Request.instance());
 				if (result.getResultCode() == Result.OPERATION_FAILED) {
 					System.out.println("Insufficient stock for "
 							+ result.getProductName());
-					System.out.println("Only " + result.getProductStock()
-							+ " units available");
+					System.out.println(result.getProductStock() + " available");
 				} else {
 					System.out.println(result.getProductName() + " "
 							+ result.getItemQuantity() + " $"
@@ -354,7 +350,7 @@ public class UserInterface {
 							+ result.getItemTotal());
 					System.out.println(
 							"Subtotal: $" + result.getTransactionTotal());
-					if (result.getOrderId() != "none") {
+					if (result.getResultCode() == Result.ORDER_PLACED) {
 						System.out.println("Reordered "
 								+ result.getOrderQuantity() + " of "
 								+ result.getProductName() + " as order number "
@@ -370,13 +366,12 @@ public class UserInterface {
 			System.out.println(
 					"Transaction Total: " + result.getTransactionTotal());
 			do {
-				Request.instance().setTransactionChange(
-						getToken("Enter sufficient cash value: "));
+				Request.instance().setTransactionChange(String.valueOf(
+						getCashDouble("Enter sufficient cash value: ")));
 				result = store.getChange(Request.instance());
 			} while (result.getResultCode() == Result.INSUFFICIENT_FUNDS);
 			System.out.println("Change owed: " + result.getTransactionChange());
 		}
-
 	}
 
 	/**
