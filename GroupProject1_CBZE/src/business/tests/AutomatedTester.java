@@ -66,7 +66,6 @@ public class AutomatedTester {
 			assert result.getResultCode() == Result.OPERATION_COMPLETED;
 			assert result.getMemberName().equals(memberNames[count]);
 			assert result.getMemberPhone().equals(memberPhones[count]);
-			// System.out.println(result.getMemberName().equals(memberNames[count]));
 		}
 	}
 
@@ -85,7 +84,6 @@ public class AutomatedTester {
 			assert result.getResultCode() == Result.OPERATION_COMPLETED;
 			assert result.getProductName().equals(productName[count]);
 			assert result.getProductStock().equals(productStock[count]);
-			// System.out.println(result.getProductName().equals(productName[count]));
 		}
 	}
 
@@ -107,8 +105,6 @@ public class AutomatedTester {
 			Request.instance().setOrderId(shipmentRecieve[count]);
 			Result result = Store.instance()
 					.processShipments(Request.instance());
-			// System.out.println(result.getProductId() + " " +
-			// result.getProductName() + " " + result.getProductStock());
 			assert result.getResultCode() == Result.OPERATION_COMPLETED;
 			assert result.getProductId() == productId[count];
 			assert result.getProductName() == productName[count];
@@ -158,8 +154,4 @@ public class AutomatedTester {
 		testCheckOut();
 		testChangePrice();
 	}
-	/*
-	 * public static void main(String[] args) {
-	 * System.out.println("Start Test"); new AutomatedTester().testAll(); }
-	 */
 }
