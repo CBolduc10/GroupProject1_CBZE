@@ -19,7 +19,7 @@ import java.util.List;
  */
 public abstract class ItemList<T extends Matchable<K>, K>
 		implements Serializable {
-	private static final long serialVersionUID = 1L;
+	// private static final long serialVersionUID = 1L;
 	private List<T> entities = new LinkedList<T>();
 
 	/**

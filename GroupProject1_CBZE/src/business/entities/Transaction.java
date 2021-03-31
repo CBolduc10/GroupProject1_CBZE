@@ -77,22 +77,14 @@ public class Transaction implements Serializable {
 	 * @return true iff the date is between the two dates
 	 */
 	public boolean betweenDates(Calendar startDate, Calendar endDate) {
-		return ((startDate.get(Calendar.YEAR) < date.get(Calendar.YEAR)
-				&& endDate.get(Calendar.YEAR) > date.get(Calendar.YEAR))
-				|| (startDate.get(Calendar.YEAR) == date.get(Calendar.YEAR)
-						&& (startDate.get(Calendar.MONTH) < date
-								.get(Calendar.MONTH)
-								|| (startDate.get(Calendar.MONTH) == date
-										.get(Calendar.MONTH)
-										&& startDate.get(Calendar.DATE) < date
-												.get(Calendar.DATE))))
-				|| (endDate.get(Calendar.YEAR) == date.get(Calendar.YEAR)
-						&& (endDate.get(Calendar.MONTH) > date
-								.get(Calendar.MONTH)
-								|| (endDate.get(Calendar.MONTH) == date
-										.get(Calendar.MONTH)
-										&& endDate.get(Calendar.DATE) > date
-												.get(Calendar.DATE)))));
+		return (((date.compareTo(startDate) >= 0)
+				&& (date.compareTo(endDate) <= 0))
+				|| (startDate.compareTo(endDate) == 0 && ((startDate
+						.get(Calendar.YEAR) == date.get(Calendar.YEAR))
+						&& (startDate.get(Calendar.MONTH) == date
+								.get(Calendar.MONTH))
+						&& (startDate.get(Calendar.DATE) == date
+								.get(Calendar.DATE)))));
 	}
 
 	/**
